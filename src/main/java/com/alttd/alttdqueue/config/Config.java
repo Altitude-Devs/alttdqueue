@@ -1,6 +1,5 @@
 package com.alttd.alttdqueue.config;
 
-import com.alttd.alttdqueue.AlttdQueue;
 import com.google.common.base.Throwables;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
