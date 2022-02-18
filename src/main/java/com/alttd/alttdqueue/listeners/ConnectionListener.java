@@ -9,9 +9,12 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.Contract;
+
+import java.util.Optional;
 
 public class ConnectionListener {
 
@@ -28,7 +31,10 @@ public class ConnectionListener {
     public void onConnect(ServerPreConnectEvent event) {
         Player player = event.getPlayer();
         ServerWrapper currentServer = serverManager.getServer(player.getCurrentServer().isPresent() ? player.getCurrentServer().get().getServer() : null);
-        ServerWrapper wrapper = serverManager.getServer(event.getOriginalServer());
+        Optional<RegisteredServer> server = event.getResult().getServer();
+        if (server.isEmpty())
+            return;
+        ServerWrapper wrapper = serverManager.getServer(server.get());
         ServerPreConnectEvent.ServerResult result = event.getResult();
 
         // if they can skip the queue, we don't need to worry about them

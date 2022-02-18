@@ -84,23 +84,11 @@ public final class ServerManager
                             // and send them to that server!
                             serverWrapper.addNextInQueue(player.get());
 
-                            player.get().createConnectionRequest(serverWrapper.getRegisteredServer());
+                            player.get().createConnectionRequest(serverWrapper.getRegisteredServer()).connect();
                             player.get().sendMessage(MiniMessage.get().parse(Config.CONNECT.replace("{server}", serverWrapper.getServerInfo().getName())));
                             //Lang.CONNECT.sendInfo(player,
                             //        "{server}", serverWrapper.getServerInfo().getName());
                         }
-                    }
-                    for (UUID uuid : serverWrapper.getNormalQueue())
-                    {
-                        /*Lang.POSITION_UPDATE.sendInfo(ProxyServer.getInstance().getPlayer(uuid),
-                                "{position}", serverWrapper.getPosition(uuid),
-                                "{server}", serverWrapper.getServerInfo().getName());*/
-                    }
-                    for (UUID uuid : serverWrapper.getPriorityQueue())
-                    {
-                        /*Lang.POSITION_UPDATE.sendInfo(ProxyServer.getInstance().getPlayer(uuid),
-                                "{position}", serverWrapper.getPosition(uuid),
-                                "{server}", serverWrapper.getServerInfo().getName());*/
                     }
                 }
             }

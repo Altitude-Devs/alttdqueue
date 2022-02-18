@@ -282,12 +282,13 @@ public class ServerWrapper
      * Update the max player field if needed
      */
     public void update() {
-        CompletableFuture<ServerPing> serverPingCompletableFuture = registeredServer.ping().whenComplete((result, error) -> {
-            if (error == null) {
-                maxPlayers = result.asBuilder().getMaximumPlayers();
-                return;
-            }
-        });
+//        CompletableFuture<ServerPing> serverPingCompletableFuture = registeredServer.ping().whenComplete((result, error) -> {
+//            if (error == null) {
+//                maxPlayers = result.asBuilder().getMaximumPlayers();
+//                return;
+//            }
+//        });
+        //Commented out to rely only on the config
     }
 
     @Override
