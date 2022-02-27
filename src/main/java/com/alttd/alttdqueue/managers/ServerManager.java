@@ -8,9 +8,11 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import com.velocitypowered.api.scheduler.ScheduledTask;
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.Template;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -82,17 +84,41 @@ public final class ServerManager
                         if (player.isPresent())
                         {
                             // and send them to that server!
-                            serverWrapper.addNextInQueue(player.get());
+                            Player player1 = player.get();
+                            serverWrapper.addNextInQueue(player1);
 
-                            player.get().createConnectionRequest(serverWrapper.getRegisteredServer()).connect();
-                            player.get().sendMessage(MiniMessage.get().parse(Config.CONNECT.replace("{server}", serverWrapper.getServerInfo().getName())));
+                            player1.createConnectionRequest(serverWrapper.getRegisteredServer()).connect();
+                            player1.sendMessage(MiniMessage.get().parse(Config.CONNECT.replace("{server}", serverWrapper.getServerInfo().getName())));
                             //Lang.CONNECT.sendInfo(player,
                             //        "{server}", serverWrapper.getServerInfo().getName());
                         }
                     }
+                    int i = 1;
+                    int queueSize = serverWrapper.getQueuedPlayerList().size();
+                    for (UUID uuid : serverWrapper.getPriorityQueue())
+                        bossBarMessage(uuid, queueSize, i++);
+                    for (UUID uuid : serverWrapper.getNormalQueue())
+                        bossBarMessage(uuid, queueSize, i++);
                 }
             }
         }).repeat(Config.QUEUE_FREQUENCY, TimeUnit.SECONDS).schedule();
+    }
+
+    void bossBarMessage(UUID uuid, int pos, int queueSize)
+    {
+        Optional<Player> optionalPlayer = plugin.getProxy().getPlayer(uuid);
+        if (optionalPlayer.isEmpty())
+            return;
+        BossBar bossBar = BossBar.bossBar(MiniMessage.get().parse(
+                        Config.BOSS_BAR, Template.of("position", String.valueOf(pos))),
+                (float) ((queueSize - pos) / queueSize),
+                BossBar.Color.YELLOW,
+                BossBar.Overlay.PROGRESS);
+        Player player = optionalPlayer.get();
+        player.showBossBar(bossBar);
+        plugin.getProxy().getScheduler().buildTask(plugin, () -> player.hideBossBar(bossBar))
+                .delay(Duration.ofSeconds(8))
+                .schedule();
     }
 
     /**

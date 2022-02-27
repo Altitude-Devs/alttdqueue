@@ -162,6 +162,7 @@ public final class Config {
     public static String ONLY_PLAYERS = "<red>Only players can run that command.";
     public static String CHECK_STATUS = "You are at position <red>{position}</red> for <aqua>{server}</aqua>. Purchase a donor rank to get a prioritized queue. Type /q leave to leave the queue.";
     public static String RELOAD = "<red>AlttdQueue config reloaded.";
+    public static String BOSS_BAR = "<green>You are <position> in queue!</green>";
     private static void messages() {
         NOSERVER = getString("messages.noserver", NOSERVER);
         QUEUE_LIST = getString("messages.queuelist", QUEUE_LIST);
@@ -177,6 +178,7 @@ public final class Config {
         ONLY_PLAYERS = getString("messages.only-players", ONLY_PLAYERS);
         CHECK_STATUS = getString("messages.check-status", CHECK_STATUS);
         RELOAD = getString("messages.reload", RELOAD);
+        BOSS_BAR = getString("messages.boss-bar", BOSS_BAR);
     }
 
 }
