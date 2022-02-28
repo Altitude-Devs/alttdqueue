@@ -1,14 +1,15 @@
 package com.alttd.alttdqueue.data;
 
+import com.alttd.alttdqueue.AlttdQueue;
 import com.alttd.alttdqueue.config.Config;
 import com.alttd.alttdqueue.config.ServerConfig;
 import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
-import com.velocitypowered.api.proxy.server.ServerPing;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 
 public class ServerWrapper
 {
@@ -217,15 +218,39 @@ public class ServerWrapper
         {
             if (hasPriorityQueue && priorityQueue.size() > 0)
             {
-                players.add(priorityQueue.remove());
+                try {
+                    players.add(priorityQueue.remove());
+                } catch (NoSuchElementException e) {
+                    queueError(priorityQueue);
+                }
             }
             else if (queue.size() > 0)
             {
-                players.add(queue.remove());
+                try {
+                    players.add(queue.remove());
+                } catch (NoSuchElementException e) {
+                    queueError(queue);
+                }
             }
             amount--;
         }
         return players;
+    }
+
+
+    private void queueError(LinkedList<UUID> queue)
+    {
+        AlttdQueue instance = AlttdQueue.getInstance();
+        ProxyServer proxy = instance.getProxy();
+        try {
+            for (UUID uuid : queue)
+                proxy.getPlayer(uuid)
+                        .ifPresent(player -> player.sendMessage(MiniMessage.markdown()
+                                .deserialize("<gold>Rejoin queue!</gold> <red>There was an error with the queue so it was reset, please join the queue again.<red>")));
+        } catch (Exception ignored) {
+            instance.getLogger().warn("Unable to notify players of clearing queue");
+        }
+        queue.clear();
     }
 
     /**
