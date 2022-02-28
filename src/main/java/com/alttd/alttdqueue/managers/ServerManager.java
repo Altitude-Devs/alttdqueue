@@ -95,9 +95,7 @@ public final class ServerManager
                     }
                     int i = 1;
                     int queueSize = serverWrapper.getQueuedPlayerList().size();
-                    for (UUID uuid : serverWrapper.getPriorityQueue())
-                        bossBarMessage(uuid, queueSize, i++);
-                    for (UUID uuid : serverWrapper.getNormalQueue())
+                    for (UUID uuid : serverWrapper.getQueuedPlayerList())
                         bossBarMessage(uuid, queueSize, i++);
                 }
             }
