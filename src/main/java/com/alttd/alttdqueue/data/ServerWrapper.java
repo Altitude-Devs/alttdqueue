@@ -129,6 +129,14 @@ public class ServerWrapper
     {
         if(!nextInQueue.contains(player.getUniqueId()))
             return false;
+//        nextInQueue.remove(player.getUniqueId());
+        return true;
+    }
+
+    public boolean removeNextInQueue(Player player)
+    {
+        if(!nextInQueue.contains(player.getUniqueId()))
+            return false;
         nextInQueue.remove(player.getUniqueId());
         return true;
     }

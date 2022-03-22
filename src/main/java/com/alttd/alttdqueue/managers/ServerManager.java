@@ -4,6 +4,7 @@ import com.alttd.alttdqueue.AlttdQueue;
 import com.alttd.alttdqueue.config.Config;
 import com.alttd.alttdqueue.config.ServerConfig;
 import com.alttd.alttdqueue.data.ServerWrapper;
+import com.velocitypowered.api.proxy.ConnectionRequestBuilder;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
@@ -13,6 +14,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public final class ServerManager
@@ -27,10 +29,11 @@ public final class ServerManager
 
     private static boolean initialized;
 
+    private HashMap<UUID, AtomicInteger> playerTries;
+
     public ServerManager(AlttdQueue plugin)
     {
         this.plugin = plugin;
-
     }
 
     public void cleanup()
@@ -56,6 +59,7 @@ public final class ServerManager
         initialized = true;
 
         servers = new ArrayList<>();
+        playerTries = new HashMap<>();
 
         // go through the servers and add them to the list
         for (RegisteredServer registeredServer : plugin.getProxy().getAllServers())
@@ -81,11 +85,21 @@ public final class ServerManager
 
                         if (player.isPresent())
                         {
+                            Player presentPlayer = player.get();
                             // and send them to that server!
-                            serverWrapper.addNextInQueue(player.get());
+                            serverWrapper.addNextInQueue(presentPlayer);
 
-                            player.get().createConnectionRequest(serverWrapper.getRegisteredServer()).connect();
-                            player.get().sendMessage(MiniMessage.get().parse(Config.CONNECT.replace("{server}", serverWrapper.getServerInfo().getName())));
+                            presentPlayer.createConnectionRequest(serverWrapper.getRegisteredServer()).connect().thenAccept(
+                                    result -> {
+                                        AtomicInteger tries = playerTries.getOrDefault(presentPlayer.getUniqueId(), new AtomicInteger(0));
+                                        if (result != null && result.isSuccessful() || tries.get() > 3) {
+                                            serverWrapper.removeNextInQueue(presentPlayer);
+                                            playerTries.remove(presentPlayer.getUniqueId());
+                                        }
+                                        tries.incrementAndGet();
+                                    }
+                            );
+                            presentPlayer.sendMessage(MiniMessage.get().parse(Config.CONNECT.replace("{server}", serverWrapper.getServerInfo().getName())));
                             //Lang.CONNECT.sendInfo(player,
                             //        "{server}", serverWrapper.getServerInfo().getName());
                         }
