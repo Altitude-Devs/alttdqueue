@@ -2,6 +2,7 @@ package com.alttd.alttdqueue.listeners;
 
 import com.alttd.alttdqueue.AlttdQueue;
 import com.alttd.alttdqueue.config.Config;
+import com.alttd.alttdqueue.config.Messages;
 import com.alttd.alttdqueue.data.QueueResponse;
 import com.alttd.alttdqueue.data.ServerWrapper;
 import com.alttd.alttdqueue.managers.ServerManager;
@@ -12,6 +13,7 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.Template;
 import org.jetbrains.annotations.Contract;
 
 import java.util.Optional;
@@ -36,10 +38,17 @@ public class ConnectionListener {
             return;
         ServerWrapper wrapper = serverManager.getServer(server.get());
         ServerPreConnectEvent.ServerResult result = event.getResult();
+        String serverName = wrapper.getServerInfo().getName().toLowerCase();
 
         // check if they are whitelisted
-        if (!player.hasPermission(Config.WHITELIST +  "." + wrapper.getServerInfo().getName().toLowerCase())) {
-
+        if (Config.WHITELIST_STATES.get(serverName)
+                && (!player.hasPermission(Config.BYPASS_WHITELIST))
+                && !player.hasPermission(Config.WHITELIST +  "." + serverName)) {
+            if (currentServer == null) // if they aren't on a server yet send them to lobby
+                event.setResult(ServerPreConnectEvent.ServerResult.allowed(serverManager.getLobby()));
+            else // if they are on a server keep them there
+                event.setResult(ServerPreConnectEvent.ServerResult.allowed(wrapper.getRegisteredServer()));
+            player.sendMessage(MiniMessage.get().parse(Messages.NOT_WHITELISTED, Template.of("server", serverName)));
             return;
         }
 
