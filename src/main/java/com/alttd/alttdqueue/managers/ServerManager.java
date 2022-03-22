@@ -4,17 +4,17 @@ import com.alttd.alttdqueue.AlttdQueue;
 import com.alttd.alttdqueue.config.Config;
 import com.alttd.alttdqueue.config.ServerConfig;
 import com.alttd.alttdqueue.data.ServerWrapper;
+import com.velocitypowered.api.proxy.ConnectionRequestBuilder;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import com.velocitypowered.api.scheduler.ScheduledTask;
-import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.Template;
 
-import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public final class ServerManager
@@ -29,10 +29,11 @@ public final class ServerManager
 
     private static boolean initialized;
 
+    private HashMap<UUID, AtomicInteger> playerTries;
+
     public ServerManager(AlttdQueue plugin)
     {
         this.plugin = plugin;
-
     }
 
     public void cleanup()
@@ -58,6 +59,7 @@ public final class ServerManager
         initialized = true;
 
         servers = new ArrayList<>();
+        playerTries = new HashMap<>();
 
         // go through the servers and add them to the list
         for (RegisteredServer registeredServer : plugin.getProxy().getAllServers())
@@ -83,40 +85,28 @@ public final class ServerManager
 
                         if (player.isPresent())
                         {
+                            Player presentPlayer = player.get();
                             // and send them to that server!
-                            Player player1 = player.get();
-                            serverWrapper.addNextInQueue(player1);
+                            serverWrapper.addNextInQueue(presentPlayer);
 
-                            player1.createConnectionRequest(serverWrapper.getRegisteredServer()).connect();
-                            player1.sendMessage(MiniMessage.get().parse(Config.CONNECT.replace("{server}", serverWrapper.getServerInfo().getName())));
+                            presentPlayer.createConnectionRequest(serverWrapper.getRegisteredServer()).connect().thenAccept(
+                                    result -> {
+                                        AtomicInteger tries = playerTries.getOrDefault(presentPlayer.getUniqueId(), new AtomicInteger(0));
+                                        if (result != null && result.isSuccessful() || tries.get() > 3) {
+                                            serverWrapper.removeNextInQueue(presentPlayer);
+                                            playerTries.remove(presentPlayer.getUniqueId());
+                                        }
+                                        tries.incrementAndGet();
+                                    }
+                            );
+                            presentPlayer.sendMessage(MiniMessage.get().parse(Config.CONNECT.replace("{server}", serverWrapper.getServerInfo().getName())));
                             //Lang.CONNECT.sendInfo(player,
                             //        "{server}", serverWrapper.getServerInfo().getName());
                         }
                     }
-                    int i = 1;
-                    int queueSize = serverWrapper.getQueuedPlayerList().size();
-                    for (UUID uuid : serverWrapper.getQueuedPlayerList())
-                        bossBarMessage(uuid, queueSize, i++);
                 }
             }
         }).repeat(Config.QUEUE_FREQUENCY, TimeUnit.SECONDS).schedule();
-    }
-
-    void bossBarMessage(UUID uuid, int pos, int queueSize)
-    {
-        Optional<Player> optionalPlayer = plugin.getProxy().getPlayer(uuid);
-        if (optionalPlayer.isEmpty())
-            return;
-        BossBar bossBar = BossBar.bossBar(MiniMessage.get().parse(
-                        Config.BOSS_BAR, Template.of("position", String.valueOf(pos))),
-                (float) ((queueSize - pos) / queueSize),
-                BossBar.Color.YELLOW,
-                BossBar.Overlay.PROGRESS);
-        Player player = optionalPlayer.get();
-        player.showBossBar(bossBar);
-        plugin.getProxy().getScheduler().buildTask(plugin, () -> player.hideBossBar(bossBar))
-                .delay(Duration.ofSeconds(8))
-                .schedule();
     }
 
     /**
