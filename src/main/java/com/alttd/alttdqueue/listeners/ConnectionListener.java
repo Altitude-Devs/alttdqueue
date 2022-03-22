@@ -37,6 +37,12 @@ public class ConnectionListener {
         ServerWrapper wrapper = serverManager.getServer(server.get());
         ServerPreConnectEvent.ServerResult result = event.getResult();
 
+        // check if they are whitelisted
+        if (!player.hasPermission(Config.WHITELIST +  "." + wrapper.getServerInfo().getName().toLowerCase())) {
+
+            return;
+        }
+
         // if they can skip the queue, we don't need to worry about them
         if (player.hasPermission(Config.SKIP_QUEUE)) {
             return;

@@ -1,8 +1,11 @@
 package com.alttd.alttdqueue.config;
 
 import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableMap;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.yaml.snakeyaml.DumperOptions;
 
 import java.io.File;
@@ -10,11 +13,13 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public final class Config {
     private static final Pattern PATH_PATTERN = Pattern.compile("\\.");
-    private static final String HEADER = "This is a test file.";
+    private static final String HEADER = "Config";
 
     private static File CONFIG_FILE;
     public static ConfigurationNode config;
@@ -129,6 +134,25 @@ public final class Config {
         return config.getNode(splitPath(path)).getLong(def);
     }
 
+    @NonNull
+    static <T> Map<String, Boolean> getBooleanMap(final @NonNull String path, final @Nullable Map<String, Boolean> def) {
+        final ImmutableMap.Builder<String, Boolean> builder = ImmutableMap.builder();
+        final ConfigurationNode node = config.getNode(path);
+        if (def != null && node.isEmpty()) {
+            set(path, def);
+            return def;
+        }
+        if (!node.isEmpty()) {
+            for (ConfigurationNode subNode : node.getChildrenList()) {
+                if (subNode != null) {
+                    Object[] objects = splitPath(subNode.toString());
+                    builder.put(objects[objects.length - 1].toString(), subNode.getBoolean(false));
+                }
+            }
+        }
+        return builder.build();
+    }
+
     public static String LOBBY_STRATEGY = "LOWEST";
     public static Long QUEUE_FREQUENCY = 2L;
     private static void Settings() {
@@ -140,11 +164,13 @@ public final class Config {
     public static String SKIP_QUEUE = "altiqueue.skip-queue";
     public static String QUEUE_COMMAND = "altiqueue.queue-command";
     public static String QUEUERELOAD_COMMAND = "altiqueue.queuereload-command";
+    public static String WHITELIST = "altiqueue.whitelist";
     private static void Permissions() {
         PRIORITY_QUEUE = getString("permission.priority-queue", PRIORITY_QUEUE);
         SKIP_QUEUE = getString("permission.skip-queue", SKIP_QUEUE);
         QUEUE_COMMAND = getString("permission.queue-command", QUEUE_COMMAND);
         QUEUERELOAD_COMMAND = getString("permission.queuereload-command", QUEUERELOAD_COMMAND);
+        WHITELIST = getString("permission.whitelist", WHITELIST);
     }
 
     // TODO reload message and all messages using minimsseage:(
@@ -179,6 +205,22 @@ public final class Config {
         CHECK_STATUS = getString("messages.check-status", CHECK_STATUS);
         RELOAD = getString("messages.reload", RELOAD);
         BOSS_BAR = getString("messages.boss-bar", BOSS_BAR);
+    }
+
+    public static Map<String, Boolean> WHITELIST_STATES = new HashMap<>();
+    private static void loadState() {
+        WHITELIST_STATES = getBooleanMap("whitelist.whitelist-state", WHITELIST_STATES);
+    }
+
+    public static void setWhitelist(String server, boolean state) {
+        WHITELIST_STATES.put(server, state);
+        set("whitelist.whitelist-state", WHITELIST_STATES);
+    }
+
+
+    public static String DEFAULT_SERVER = "lobby";
+    public static void loadSettings() {
+        DEFAULT_SERVER = getString("settings.default-server", DEFAULT_SERVER);
     }
 
 }
