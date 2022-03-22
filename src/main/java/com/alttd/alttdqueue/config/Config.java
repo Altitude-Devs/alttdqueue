@@ -219,10 +219,4 @@ public final class Config {
         set("whitelist.whitelist-state", WHITELIST_STATES);
     }
 
-
-    public static String DEFAULT_SERVER = "lobby";
-    public static void loadSettings() {
-        DEFAULT_SERVER = getString("settings.default-server", DEFAULT_SERVER);
-    }
-
 }
