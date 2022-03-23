@@ -1,5 +1,6 @@
 package com.alttd.alttdqueue.command;
 
+import com.alttd.alttdqueue.config.Config;
 import com.velocitypowered.api.command.CommandSource;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
@@ -18,7 +19,7 @@ public abstract class SubCommand {
     public abstract String getName();
 
     public String getPermission() {
-        return "permissionwhitelist.command." + getName();
+        return Config.COMMAND_BASE_PREFIX + "." + getName();
     }
 
     public abstract List<String> getTabComplete(CommandSource source, String[] args);

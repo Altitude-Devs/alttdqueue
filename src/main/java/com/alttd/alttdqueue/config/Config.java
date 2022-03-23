@@ -166,6 +166,7 @@ public final class Config {
     public static String QUEUERELOAD_COMMAND = "altiqueue.queuereload-command";
     public static String WHITELIST = "altiqueue.whitelist";
     public static String BYPASS_WHITELIST = "altiqueue.whitelist.bypass";
+    public static String COMMAND_BASE_PREFIX = "altiqueue.command";
     private static void Permissions() {
         PRIORITY_QUEUE = getString("permission.priority-queue", PRIORITY_QUEUE);
         SKIP_QUEUE = getString("permission.skip-queue", SKIP_QUEUE);
@@ -173,6 +174,7 @@ public final class Config {
         QUEUERELOAD_COMMAND = getString("permission.queuereload-command", QUEUERELOAD_COMMAND);
         WHITELIST = getString("permission.whitelist", WHITELIST);
         BYPASS_WHITELIST = getString("permission.bypass-whitelist", BYPASS_WHITELIST);
+        COMMAND_BASE_PREFIX = getString("permission.whitelist-base-prefix", COMMAND_BASE_PREFIX);
     }
 
     // TODO reload message and all messages using minimsseage:(
