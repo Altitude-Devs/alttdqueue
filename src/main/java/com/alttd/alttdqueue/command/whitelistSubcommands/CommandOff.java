@@ -16,12 +16,12 @@ import java.util.stream.Collectors;
 public class CommandOff extends SubCommand {
     @Override
     public void onCommand(CommandSource source, String[] args) {
-        if (args.length != 1) {
+        if (args.length != 2) {
             source.sendMessage(getMiniMessage().deserialize(getHelpMessage()));
             return;
         }
 
-        String serverName = args[0];
+        String serverName = args[1];
         Optional<RegisteredServer> optionalRegisteredServer = AlttdQueue.getInstance().getProxy().getServer(serverName);
 
         if (optionalRegisteredServer.isEmpty()) {
@@ -29,9 +29,11 @@ public class CommandOff extends SubCommand {
             return;
         }
 
-        if (Config.WHITELIST_STATES.getOrDefault(serverName, false)) {
-            source.sendMessage(getMiniMessage().parse(Messages.ALREADY_OFF, Template.of("server", (serverName))));
-            return;
+        if (Config.WHITELIST_STATES.containsKey(serverName)) {
+            if (Config.WHITELIST_STATES.get(serverName)) {
+                source.sendMessage(getMiniMessage().parse(Messages.ALREADY_OFF, Template.of("server", (serverName))));
+                return;
+            }
         }
 
         Config.setWhitelist(serverName,false);

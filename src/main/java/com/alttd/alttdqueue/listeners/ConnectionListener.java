@@ -41,15 +41,17 @@ public class ConnectionListener {
         String serverName = wrapper.getServerInfo().getName().toLowerCase();
 
         // check if they are whitelisted
-        if (Config.WHITELIST_STATES.get(serverName)
-                && (!player.hasPermission(Config.BYPASS_WHITELIST))
-                && !player.hasPermission(Config.WHITELIST +  "." + serverName)) {
-            if (currentServer == null) // if they aren't on a server yet send them to lobby
-                event.setResult(ServerPreConnectEvent.ServerResult.allowed(serverManager.getLobby()));
-            else // if they are on a server keep them there
-                event.setResult(ServerPreConnectEvent.ServerResult.allowed(wrapper.getRegisteredServer()));
-            player.sendMessage(MiniMessage.get().parse(Messages.NOT_WHITELISTED, Template.of("server", serverName)));
-            return;
+        if (Config.WHITELIST_STATES.containsKey(serverName)) {
+            if (Config.WHITELIST_STATES.get(serverName)
+                    && (!player.hasPermission(Config.BYPASS_WHITELIST))
+                    && !player.hasPermission(Config.WHITELIST + "." + serverName)) {
+                if (currentServer == null) // if they aren't on a server yet send them to lobby
+                    event.setResult(ServerPreConnectEvent.ServerResult.allowed(serverManager.getLobby()));
+                else // if they are on a server keep them there
+                    event.setResult(ServerPreConnectEvent.ServerResult.denied());
+                player.sendMessage(MiniMessage.get().parse(Messages.NOT_WHITELISTED, Template.of("server", serverName)));
+                return;
+            }
         }
 
         // if they can skip the queue, we don't need to worry about them

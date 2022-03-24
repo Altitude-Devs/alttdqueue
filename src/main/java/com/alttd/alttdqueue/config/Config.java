@@ -138,8 +138,8 @@ public final class Config {
     static <T> Map<String, Boolean> getBooleanMap(final @NonNull String path, final @Nullable Map<String, Boolean> def) {
         final ImmutableMap.Builder<String, Boolean> builder = ImmutableMap.builder();
         final ConfigurationNode node = config.getNode(path);
-        if (def != null && node.isEmpty()) {
-            set(path, def);
+        if (def != null && node.isVirtual()) {
+            setBooleanMap(path, def);
             return def;
         }
         if (!node.isEmpty()) {
@@ -151,6 +151,12 @@ public final class Config {
             }
         }
         return builder.build();
+    }
+
+    private static void setBooleanMap(String path, Map<String, Boolean> map) {
+        for (Map.Entry<String, Boolean> entry : map.entrySet()) {
+            set(path + "." + entry.getKey(), entry.getValue());
+        }
     }
 
     public static String LOBBY_STRATEGY = "LOWEST";
@@ -218,7 +224,13 @@ public final class Config {
 
     public static void setWhitelist(String server, boolean state) {
         WHITELIST_STATES.put(server, state);
-        set("whitelist.whitelist-state", WHITELIST_STATES);
+        setBooleanMap("whitelist.whitelist-state", WHITELIST_STATES);
+        saveConfig();
+    }
+
+    public static String DEFAULT_SERVER = "lobby";
+    private static void loadSettings() {
+        DEFAULT_SERVER = getString("settings.default-server", DEFAULT_SERVER);
     }
 
 }
