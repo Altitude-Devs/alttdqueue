@@ -19,6 +19,8 @@ public class ServerWrapper
 
     private boolean hasPriorityQueue;
 
+    private boolean whiteList;
+
     private boolean lobby;
 
     private LinkedList<UUID> queue;
@@ -27,6 +29,8 @@ public class ServerWrapper
 
     private LinkedList<UUID> nextInQueue;
 
+    private ServerConfig serverConfig;
+
     public ServerWrapper(RegisteredServer registeredServer, ServerConfig serverConfig)
     {
         this.registeredServer = registeredServer;
@@ -34,9 +38,11 @@ public class ServerWrapper
         this.maxPlayers = serverConfig.maxPlayers;
         this.hasPriorityQueue = serverConfig.hasPriorityQueue;
         this.lobby = serverConfig.isLobby;
+        this.whiteList = serverConfig.hasWhiteList;
 
         this.queue = new LinkedList<>();
         this.nextInQueue = new LinkedList<>();
+        this.serverConfig = serverConfig;
 
         if (this.hasPriorityQueue)
         {
@@ -245,7 +251,6 @@ public class ServerWrapper
         return players;
     }
 
-
     private void queueError(LinkedList<UUID> queue)
     {
         AlttdQueue instance = AlttdQueue.getInstance();
@@ -312,6 +317,21 @@ public class ServerWrapper
     }
 
     /**
+     * Returns whether or not this server has a whitelist.
+     *
+     * @return whether or not this server has a whitelist.
+     */
+    public boolean hasWhiteList()
+    {
+        return whiteList;
+    }
+
+    public void setWhiteList(boolean val) {
+        this.whiteList = val;
+        ServerConfig.set(serverConfig.configPath + "hasWhiteList", val);
+    }
+
+    /**
      * Update the max player field if needed
      */
     public void update() {
@@ -329,6 +349,7 @@ public class ServerWrapper
         return getRegisteredServer().getServerInfo().getName()
                 + "\nmaxplayers: " + getMaxPlayers()
                 + "\nhasPriorityQueue: " + hasPriorityQueue()
+                + "\nhasWhiteList: " + hasWhiteList()
                 + "\nlobby: " + isLobby()
                 + "\nisfull: " + isFull();
     }

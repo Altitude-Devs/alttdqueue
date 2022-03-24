@@ -6,7 +6,7 @@ public final class ServerConfig {
     private static final Pattern PATH_PATTERN = Pattern.compile("\\.");
 
     private final String servername;
-    private final String configPath;
+    public final String configPath;
     private final String defaultpath;
 
     public ServerConfig(String serverName) {
@@ -25,7 +25,7 @@ public final class ServerConfig {
         return PATH_PATTERN.split(key);
     }
 
-    private static void set(String path, Object def) {
+    public static void set(String path, Object def) {
         if(Config.config.getNode(splitPath(path)).isVirtual()) {
             Config.config.getNode(splitPath(path)).setValue(def);
         }
@@ -58,9 +58,11 @@ public final class ServerConfig {
     public boolean isLobby = false;
     public boolean hasPriorityQueue = false;
     public int maxPlayers = 50;
+    public boolean hasWhiteList = false;
     private void ServerSettings() {
         maxPlayers = getInt("maxplayer", maxPlayers);
         isLobby = getBoolean("islobby", isLobby);
         hasPriorityQueue = getBoolean("hasPriorityQueue", hasPriorityQueue);
+        hasWhiteList = getBoolean("hasWhiteList", hasWhiteList);
     }
 }

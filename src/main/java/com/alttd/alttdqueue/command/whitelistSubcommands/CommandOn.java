@@ -4,6 +4,7 @@ import com.alttd.alttdqueue.AlttdQueue;
 import com.alttd.alttdqueue.command.SubCommand;
 import com.alttd.alttdqueue.config.Config;
 import com.alttd.alttdqueue.config.Messages;
+import com.alttd.alttdqueue.data.ServerWrapper;
 import com.alttd.alttdqueue.util.Util;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
@@ -30,6 +31,18 @@ public class CommandOn extends SubCommand {
             source.sendMessage(getMiniMessage().parse(Messages.INVALID_SERVER, Template.of("server", serverName)));
             return;
         }
+
+        ServerWrapper wrapper = AlttdQueue.getInstance().getServerManager().getServer(serverName);
+        if (wrapper == null) {
+            source.sendMessage(getMiniMessage().parse(Config.NOSERVER, Template.of("server", serverName)));
+            return;
+        }
+        if (wrapper.hasWhiteList()) {
+            source.sendMessage(getMiniMessage().parse(Messages.ALREADY_ON, Template.of("server", serverName)));
+            return;
+        }
+        wrapper.setWhiteList(true);
+        /*
         if (Config.WHITELIST_STATES.containsKey(serverName)) {
             if (Config.WHITELIST_STATES.get(serverName)) {
                 source.sendMessage(getMiniMessage().parse(Messages.ALREADY_ON, Template.of("server", serverName)));
@@ -38,6 +51,7 @@ public class CommandOn extends SubCommand {
         }
 
         Config.setWhitelist(serverName,true);
+        */
         Component kickMessage = getMiniMessage().parse(Messages.NOT_WHITELISTED, Template.of("server", serverName));
 
         Util.enforceWhitelistForServer(serverName, optionalRegisteredServer.get(), kickMessage);

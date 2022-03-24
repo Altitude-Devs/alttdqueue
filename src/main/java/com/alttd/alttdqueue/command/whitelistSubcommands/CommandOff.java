@@ -4,6 +4,7 @@ import com.alttd.alttdqueue.AlttdQueue;
 import com.alttd.alttdqueue.command.SubCommand;
 import com.alttd.alttdqueue.config.Config;
 import com.alttd.alttdqueue.config.Messages;
+import com.alttd.alttdqueue.data.ServerWrapper;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import net.kyori.adventure.text.minimessage.Template;
@@ -29,6 +30,18 @@ public class CommandOff extends SubCommand {
             return;
         }
 
+        ServerWrapper wrapper = AlttdQueue.getInstance().getServerManager().getServer(serverName);
+        if (wrapper == null) {
+            source.sendMessage(getMiniMessage().parse(Config.NOSERVER, Template.of("server", serverName)));
+            return;
+        }
+        if (!wrapper.hasWhiteList()) {
+            source.sendMessage(getMiniMessage().parse(Messages.ALREADY_OFF, Template.of("server", serverName)));
+            return;
+        }
+        wrapper.setWhiteList(true);
+
+        /*
         if (Config.WHITELIST_STATES.containsKey(serverName)) {
             if (Config.WHITELIST_STATES.get(serverName)) {
                 source.sendMessage(getMiniMessage().parse(Messages.ALREADY_OFF, Template.of("server", (serverName))));
@@ -37,7 +50,7 @@ public class CommandOff extends SubCommand {
         }
 
         Config.setWhitelist(serverName,false);
-
+        */
         source.sendMessage(getMiniMessage().parse(Messages.TURNED_OFF, Template.of("server", serverName)));
     }
 
