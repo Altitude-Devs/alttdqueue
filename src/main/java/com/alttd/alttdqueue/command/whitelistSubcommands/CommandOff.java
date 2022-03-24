@@ -39,18 +39,8 @@ public class CommandOff extends SubCommand {
             source.sendMessage(getMiniMessage().parse(Messages.ALREADY_OFF, Template.of("server", serverName)));
             return;
         }
-        wrapper.setWhiteList(true);
+        wrapper.setWhiteList(false);
 
-        /*
-        if (Config.WHITELIST_STATES.containsKey(serverName)) {
-            if (Config.WHITELIST_STATES.get(serverName)) {
-                source.sendMessage(getMiniMessage().parse(Messages.ALREADY_OFF, Template.of("server", (serverName))));
-                return;
-            }
-        }
-
-        Config.setWhitelist(serverName,false);
-        */
         source.sendMessage(getMiniMessage().parse(Messages.TURNED_OFF, Template.of("server", serverName)));
     }
 

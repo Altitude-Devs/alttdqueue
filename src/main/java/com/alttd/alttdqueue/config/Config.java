@@ -134,31 +134,6 @@ public final class Config {
         return config.getNode(splitPath(path)).getLong(def);
     }
 
-    @NonNull
-    static <T> Map<String, Boolean> getBooleanMap(final @NonNull String path, final @Nullable Map<String, Boolean> def) {
-        final ImmutableMap.Builder<String, Boolean> builder = ImmutableMap.builder();
-        final ConfigurationNode node = config.getNode(path);
-        if (def != null && node.isVirtual()) {
-            setBooleanMap(path, def);
-            return def;
-        }
-        if (!node.isEmpty()) {
-            for (ConfigurationNode subNode : node.getChildrenList()) {
-                if (subNode != null) {
-                    Object[] objects = splitPath(subNode.toString());
-                    builder.put(objects[objects.length - 1].toString(), subNode.getBoolean(false));
-                }
-            }
-        }
-        return builder.build();
-    }
-
-    private static void setBooleanMap(String path, Map<String, Boolean> map) {
-        for (Map.Entry<String, Boolean> entry : map.entrySet()) {
-            set(path + "." + entry.getKey(), entry.getValue());
-        }
-    }
-
     public static String LOBBY_STRATEGY = "LOWEST";
     public static Long QUEUE_FREQUENCY = 2L;
     private static void Settings() {
@@ -215,17 +190,6 @@ public final class Config {
         CHECK_STATUS = getString("messages.check-status", CHECK_STATUS);
         RELOAD = getString("messages.reload", RELOAD);
         BOSS_BAR = getString("messages.boss-bar", BOSS_BAR);
-    }
-
-    public static Map<String, Boolean> WHITELIST_STATES = new HashMap<>();
-    private static void loadState() {
-        WHITELIST_STATES = getBooleanMap("whitelist.whitelist-state", WHITELIST_STATES);
-    }
-
-    public static void setWhitelist(String server, boolean state) {
-        WHITELIST_STATES.put(server, state);
-        setBooleanMap("whitelist.whitelist-state", WHITELIST_STATES);
-        saveConfig();
     }
 
     public static String DEFAULT_SERVER = "lobby";

@@ -42,16 +42,7 @@ public class CommandOn extends SubCommand {
             return;
         }
         wrapper.setWhiteList(true);
-        /*
-        if (Config.WHITELIST_STATES.containsKey(serverName)) {
-            if (Config.WHITELIST_STATES.get(serverName)) {
-                source.sendMessage(getMiniMessage().parse(Messages.ALREADY_ON, Template.of("server", serverName)));
-                return;
-            }
-        }
 
-        Config.setWhitelist(serverName,true);
-        */
         Component kickMessage = getMiniMessage().parse(Messages.NOT_WHITELISTED, Template.of("server", serverName));
 
         Util.enforceWhitelistForServer(serverName, optionalRegisteredServer.get(), kickMessage);

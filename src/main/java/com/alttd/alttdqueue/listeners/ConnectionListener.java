@@ -41,9 +41,8 @@ public class ConnectionListener {
         String serverName = wrapper.getServerInfo().getName().toLowerCase();
 
         // check if they are whitelisted
-        if (Config.WHITELIST_STATES.containsKey(serverName)) {
-            if (Config.WHITELIST_STATES.get(serverName)
-                    && (!player.hasPermission(Config.BYPASS_WHITELIST))
+        if (wrapper.hasWhiteList()) {
+            if ((!player.hasPermission(Config.BYPASS_WHITELIST))
                     && !player.hasPermission(Config.WHITELIST + "." + serverName)) {
                 if (currentServer == null) // if they aren't on a server yet send them to lobby
                     event.setResult(ServerPreConnectEvent.ServerResult.allowed(serverManager.getLobby()));
