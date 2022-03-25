@@ -155,7 +155,7 @@ public final class Config {
         QUEUERELOAD_COMMAND = getString("permission.queuereload-command", QUEUERELOAD_COMMAND);
         WHITELIST = getString("permission.whitelist", WHITELIST);
         BYPASS_WHITELIST = getString("permission.bypass-whitelist", BYPASS_WHITELIST);
-        COMMAND_BASE_PREFIX = getString("permission.whitelist-base-prefix", COMMAND_BASE_PREFIX);
+        COMMAND_BASE_PREFIX = getString("permission.command-base-prefix", COMMAND_BASE_PREFIX);
     }
 
     // TODO reload message and all messages using minimsseage:(
