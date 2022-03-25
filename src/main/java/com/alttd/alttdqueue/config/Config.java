@@ -191,10 +191,4 @@ public final class Config {
         RELOAD = getString("messages.reload", RELOAD);
         BOSS_BAR = getString("messages.boss-bar", BOSS_BAR);
     }
-
-    public static String DEFAULT_SERVER = "lobby";
-    private static void loadSettings() {
-        DEFAULT_SERVER = getString("settings.default-server", DEFAULT_SERVER);
-    }
-
 }
