@@ -25,7 +25,14 @@ public final class ServerConfig {
         return PATH_PATTERN.split(key);
     }
 
-    public static void set(String path, Object def) {
+    public static void setAndSave(String path, Object def) {
+        if(Config.config.getNode(splitPath(path)).isVirtual()) {
+            Config.config.getNode(splitPath(path)).setValue(def);
+        }
+        Config.saveConfig();
+    }
+
+    private static void set(String path, Object def) {
         if(Config.config.getNode(splitPath(path)).isVirtual()) {
             Config.config.getNode(splitPath(path)).setValue(def);
         }
