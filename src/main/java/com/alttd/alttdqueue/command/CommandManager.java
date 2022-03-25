@@ -1,5 +1,6 @@
 package com.alttd.alttdqueue.command;
 
+import com.alttd.alttdqueue.command.whitelistSubcommands.CommandEnforce;
 import com.alttd.alttdqueue.command.whitelistSubcommands.CommandHelp;
 import com.alttd.alttdqueue.command.whitelistSubcommands.CommandOff;
 import com.alttd.alttdqueue.command.whitelistSubcommands.CommandOn;
@@ -21,6 +22,7 @@ public class CommandManager implements SimpleCommand {
         subCommands = Arrays.asList(
                 new CommandOn(),
                 new CommandOff(),
+                new CommandEnforce(),
                 new CommandHelp(this));
     }
 
