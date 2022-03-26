@@ -16,12 +16,12 @@ import java.util.Optional;
 public class CommandEnforce extends SubCommand {
     @Override
     public void onCommand(CommandSource source, String[] args) {
-        if (args.length != 1) {
+        if (args.length != 2) {
             source.sendMessage(getMiniMessage().deserialize(getHelpMessage()));
             return;
         }
 
-        String serverName = args[0];
+        String serverName = args[1];
         Optional<RegisteredServer> optionalRegisteredServer = AlttdQueue.getInstance().getProxy().getServer(serverName);
 
         if (optionalRegisteredServer.isEmpty()) {
