@@ -26,9 +26,7 @@ public final class ServerConfig {
     }
 
     public static void setAndSave(String path, Object def) {
-        if(Config.config.getNode(splitPath(path)).isVirtual()) {
-            Config.config.getNode(splitPath(path)).setValue(def);
-        }
+        set(path, def);
         Config.saveConfig();
     }
 

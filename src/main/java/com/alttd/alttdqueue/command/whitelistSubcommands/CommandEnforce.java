@@ -2,16 +2,16 @@ package com.alttd.alttdqueue.command.whitelistSubcommands;
 
 import com.alttd.alttdqueue.AlttdQueue;
 import com.alttd.alttdqueue.command.SubCommand;
+import com.alttd.alttdqueue.config.Config;
 import com.alttd.alttdqueue.config.Messages;
+import com.alttd.alttdqueue.data.ServerWrapper;
 import com.alttd.alttdqueue.util.Util;
 import com.velocitypowered.api.command.CommandSource;
-import com.velocitypowered.api.proxy.server.RegisteredServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.Template;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class CommandEnforce extends SubCommand {
     @Override
@@ -22,17 +22,19 @@ public class CommandEnforce extends SubCommand {
         }
 
         String serverName = args[1];
-        Optional<RegisteredServer> optionalRegisteredServer = AlttdQueue.getInstance().getProxy().getServer(serverName);
-
-        if (optionalRegisteredServer.isEmpty()) {
-            source.sendMessage(getMiniMessage().parse(Messages.INVALID_SERVER, Template.of("server", serverName)));
+        ServerWrapper wrapper = AlttdQueue.getInstance().getServerManager().getServer(serverName);
+        if (wrapper == null) {
+            source.sendMessage(getMiniMessage().parse(Config.NOSERVER, Template.of("server", serverName)));
+            return;
+        }
+        if (!wrapper.hasWhiteList()) {
+            source.sendMessage(getMiniMessage().parse(Messages.WHITELIST_OFF, Template.of("server", serverName)));
             return;
         }
 
-        RegisteredServer server = optionalRegisteredServer.get();
         Component kickMessage = getMiniMessage().parse(Messages.NOT_WHITELISTED, Template.of("server", serverName));
 
-        Util.enforceWhitelistForServer(serverName, server, kickMessage);
+        Util.enforceWhitelistForServer(serverName, wrapper.getRegisteredServer(), kickMessage);
 
         source.sendMessage(getMiniMessage().parse(Messages.ENFORCED_WHITELIST, Template.of("server", serverName)));
     }

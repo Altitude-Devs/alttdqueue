@@ -144,7 +144,8 @@ public final class Messages {
     public static String TURNED_OFF = "<gold>Turned the whitelist <red>off</red> for <server>!</gold>";
     public static String TURNED_ON = "<gold>Turned the whitelist <green>on</green> for <server>!</gold>";
     public static String INVALID_SERVER = "<red><server> is not a valid server.</red>";
-    public static String ENFORCED_WHITELIST = "<green>Enforced whitelist for <server></green>";
+    public static String ENFORCED_WHITELIST = "<green>Enforced whitelist for <server>.</green>";
+    public static String WHITELIST_OFF = "<red>There is no whitelist on for <server>.</red>";
     private static void loadWhitelistMessages() {
         NOT_WHITELISTED = getString("messages.not-whitelisted", NOT_WHITELISTED);
         ALREADY_OFF = getString("messages.already-off", ALREADY_OFF);
@@ -153,6 +154,7 @@ public final class Messages {
         TURNED_ON = getString("messages.turned-on", TURNED_ON);
         INVALID_SERVER = getString("messages.invalid-server", INVALID_SERVER);
         ENFORCED_WHITELIST = getString("messages.enforced-whitelist", ENFORCED_WHITELIST);
+        WHITELIST_OFF = getString("messages.enforced-whitelist", WHITELIST_OFF);
     }
 
     public static String HELP_MESSAGE_WRAPPER = "<gold>PermissionWhitelist help:\n<commands></gold>";
