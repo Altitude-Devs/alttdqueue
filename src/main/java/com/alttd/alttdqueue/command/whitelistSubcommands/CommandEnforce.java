@@ -8,7 +8,7 @@ import com.alttd.alttdqueue.data.ServerWrapper;
 import com.alttd.alttdqueue.util.Util;
 import com.velocitypowered.api.command.CommandSource;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,19 +24,19 @@ public class CommandEnforce extends SubCommand {
         String serverName = args[1];
         ServerWrapper wrapper = AlttdQueue.getInstance().getServerManager().getServer(serverName);
         if (wrapper == null) {
-            source.sendMessage(getMiniMessage().parse(Config.NOSERVER, Template.of("server", serverName)));
+            source.sendMessage(getMiniMessage().deserialize(Config.NOSERVER, Placeholder.unparsed("server", serverName)));
             return;
         }
         if (!wrapper.hasWhiteList()) {
-            source.sendMessage(getMiniMessage().parse(Messages.WHITELIST_OFF, Template.of("server", serverName)));
+            source.sendMessage(getMiniMessage().deserialize(Messages.WHITELIST_OFF, Placeholder.unparsed("server", serverName)));
             return;
         }
 
-        Component kickMessage = getMiniMessage().parse(Messages.NOT_WHITELISTED, Template.of("server", serverName));
+        Component kickMessage = getMiniMessage().deserialize(Messages.NOT_WHITELISTED, Placeholder.unparsed("server", serverName));
 
         Util.enforceWhitelistForServer(serverName, wrapper.getRegisteredServer(), kickMessage);
 
-        source.sendMessage(getMiniMessage().parse(Messages.ENFORCED_WHITELIST, Template.of("server", serverName)));
+        source.sendMessage(getMiniMessage().deserialize(Messages.ENFORCED_WHITELIST, Placeholder.unparsed("server", serverName)));
     }
 
     @Override

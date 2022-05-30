@@ -258,7 +258,7 @@ public class ServerWrapper
         try {
             for (UUID uuid : queue)
                 proxy.getPlayer(uuid)
-                        .ifPresent(player -> player.sendMessage(MiniMessage.markdown()
+                        .ifPresent(player -> player.sendMessage(MiniMessage.miniMessage()
                                 .deserialize("<gold>Rejoin queue!</gold> <red>There was an error with the queue so it was reset, please join the queue again.<red>")));
         } catch (Exception ignored) {
             instance.getLogger().warn("Unable to notify players of clearing queue");

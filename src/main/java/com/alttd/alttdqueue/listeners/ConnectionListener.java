@@ -11,9 +11,8 @@ import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.jetbrains.annotations.Contract;
 
 import java.util.Optional;
@@ -48,7 +47,7 @@ public class ConnectionListener {
                     event.setResult(ServerPreConnectEvent.ServerResult.allowed(serverManager.getLobby()));
                 else // if they are on a server keep them there
                     event.setResult(ServerPreConnectEvent.ServerResult.denied());
-                player.sendMessage(MiniMessage.get().parse(Messages.NOT_WHITELISTED, Template.of("server", serverName)));
+                player.sendMessage(MiniMessage.miniMessage().deserialize(Messages.NOT_WHITELISTED, Placeholder.unparsed("server", serverName)));
                 return;
             }
         }
@@ -63,7 +62,7 @@ public class ConnectionListener {
             if (currentServer == null) {
                 event.setResult(ServerPreConnectEvent.ServerResult.allowed(serverManager.getLobby()));
                 wrapper.addQueue(player);
-                player.sendMessage(MiniMessage.get().parse(Config.DIRECT_CONNECT_FULL
+                player.sendMessage(MiniMessage.miniMessage().deserialize(Config.DIRECT_CONNECT_FULL
                                 .replace("{server}", wrapper.getServerInfo().getName())
                                 .replace("{position}", wrapper.getPosition(player.getUniqueId())+""))
                         );
@@ -90,7 +89,7 @@ public class ConnectionListener {
 
             // check if they're already in queue
             if (response == QueueResponse.ALREADY_ADDED) {
-                player.sendMessage(MiniMessage.get().parse(Config.ALREADY_QUEUED
+                player.sendMessage(MiniMessage.miniMessage().deserialize(Config.ALREADY_QUEUED
                                 .replace("{server}", wrapper.getServerInfo().getName())
                                 .replace("{position}", wrapper.getPosition(player.getUniqueId())+"")));
                 event.setResult(ServerPreConnectEvent.ServerResult.denied());
@@ -100,7 +99,7 @@ public class ConnectionListener {
             // if they had a queue before, let them know
             if (previousQueue != null) {
                 previousQueue.removeFromQueue(player.getUniqueId());
-                player.sendMessage(MiniMessage.get().parse(Config.LEFT_QUEUE
+                player.sendMessage(MiniMessage.miniMessage().deserialize(Config.LEFT_QUEUE
                                 .replace("{server}", wrapper.getServerInfo().getName())));
             }
 
@@ -108,7 +107,7 @@ public class ConnectionListener {
             // if they're a new connection, send them to the lobby no matter what
             if (currentServer == null) {
                 event.setResult(ServerPreConnectEvent.ServerResult.allowed(serverManager.getLobby()));
-                player.sendMessage(MiniMessage.get().parse(Config.DIRECT_CONNECT_FULL
+                player.sendMessage(MiniMessage.miniMessage().deserialize(Config.DIRECT_CONNECT_FULL
                                 .replace("{server}", wrapper.getServerInfo().getName())
                                 .replace("{position}", wrapper.getPosition(player.getUniqueId())+"")));
                 return;
@@ -118,7 +117,7 @@ public class ConnectionListener {
             event.setResult(ServerPreConnectEvent.ServerResult.denied());
 
             // tell them they were added to the queue
-            player.sendMessage(MiniMessage.get().parse(Config.JOINED_QUEUE
+            player.sendMessage(MiniMessage.miniMessage().deserialize(Config.JOINED_QUEUE
                             .replace("{server}", wrapper.getServerInfo().getName())
                             .replace("{position}", wrapper.getPosition(player.getUniqueId())+"")));
         }

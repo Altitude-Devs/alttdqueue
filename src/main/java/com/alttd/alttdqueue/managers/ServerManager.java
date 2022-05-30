@@ -99,7 +99,7 @@ public final class ServerManager
                                         tries.incrementAndGet();
                                     }
                             );
-                            presentPlayer.sendMessage(MiniMessage.get().parse(Config.CONNECT.replace("{server}", serverWrapper.getServerInfo().getName())));
+                            presentPlayer.sendMessage(MiniMessage.miniMessage().deserialize(Config.CONNECT.replace("{server}", serverWrapper.getServerInfo().getName())));
                             //Lang.CONNECT.sendInfo(player,
                             //        "{server}", serverWrapper.getServerInfo().getName());
                         }

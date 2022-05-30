@@ -42,7 +42,7 @@ public class CommandManager implements SimpleCommand {
             subCommand = getSubCommand("help");
 
         if (!source.hasPermission(subCommand.getPermission())) {
-            source.sendMessage(MiniMessage.get().deserialize(Messages.NO_PERMISSION));
+            source.sendMessage(MiniMessage.miniMessage().deserialize(Messages.NO_PERMISSION));
             return;
         }
 

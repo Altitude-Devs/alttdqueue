@@ -51,10 +51,10 @@ public class Queue {
                                     String server = context.getArgument("server", String.class);
                                     ServerWrapper serverWrapper = plugin.getServerManager().getServer(server);
                                     if (serverWrapper == null) {
-                                        context.getSource().sendMessage(MiniMessage.get().parse(Config.NOSERVER));
+                                        context.getSource().sendMessage(MiniMessage.miniMessage().deserialize(Config.NOSERVER));
                                         return 1;
                                     }
-                                    context.getSource().sendMessage(MiniMessage.get().parse(server + ":" + serverWrapper.toString()));
+                                    context.getSource().sendMessage(MiniMessage.miniMessage().deserialize(server + ":" + serverWrapper.toString()));
                                     return 1;
                                 }))
                         .executes(context -> {
@@ -72,7 +72,7 @@ public class Queue {
                         .executes(context -> {
                             plugin.reload();
                             //context.getSource().sendMessage(Component.text("Reload successful."));
-                            context.getSource().sendMessage(MiniMessage.get().parse(Config.RELOAD));
+                            context.getSource().sendMessage(MiniMessage.miniMessage().deserialize(Config.RELOAD));
                             return 1;
                         }))
                 .then(LiteralArgumentBuilder
@@ -110,17 +110,17 @@ public class Queue {
                                     String server = context.getArgument("server", String.class);
                                     ServerWrapper serverWrapper = plugin.getServerManager().getServer(server);
                                     if (serverWrapper == null) {
-                                        context.getSource().sendMessage(MiniMessage.get().parse(Config.NOSERVER));
+                                        context.getSource().sendMessage(MiniMessage.miniMessage().deserialize(Config.NOSERVER));
                                         return 1;
                                     }
                                     List<UUID> uuids = serverWrapper.getQueuedPlayerList();
 
-                                    context.getSource().sendMessage(MiniMessage.get().parse(Config.QUEUE_LIST
+                                    context.getSource().sendMessage(MiniMessage.miniMessage().deserialize(Config.QUEUE_LIST
                                             .replace("{server}", serverWrapper.getServerInfo().getName())
                                             .replace("{players}", uuids.size() + "")));
                                     for (int i = 0; i < uuids.size() && i < 11; i++) {
                                         plugin.getProxy().getPlayer(uuids.get(i)).ifPresent(Player::getUsername);
-                                        context.getSource().sendMessage(MiniMessage.get().parse(Config.QUEUE_LISTITEM
+                                        context.getSource().sendMessage(MiniMessage.miniMessage().deserialize(Config.QUEUE_LISTITEM
                                                 .replace("{player}", plugin.getProxy().getPlayer(uuids.get(i)).isPresent() ? plugin.getProxy().getPlayer(uuids.get(i)).get().getUsername() : "error")
                                                 .replace("{id}", i+1+"")));
                                     }
@@ -146,9 +146,9 @@ public class Queue {
 
     private void checkQueue(Player player, ServerWrapper serverWrapper) {
         if (serverWrapper == null) {
-            player.sendMessage(MiniMessage.get().parse(Config.NOT_QUEUED));
+            player.sendMessage(MiniMessage.miniMessage().deserialize(Config.NOT_QUEUED));
         } else {
-            player.sendMessage(MiniMessage.get().parse(Config.CHECK_STATUS
+            player.sendMessage(MiniMessage.miniMessage().deserialize(Config.CHECK_STATUS
                     .replace("{server}", serverWrapper.getServerInfo().getName())
                     .replace("{position}", serverWrapper.getPosition(player.getUniqueId()) + "")));
         }
@@ -156,10 +156,10 @@ public class Queue {
 
     private void leaveQueue(Player player, ServerWrapper serverWrapper) {
         if (serverWrapper == null) {
-            player.sendMessage(MiniMessage.get().parse(Config.NOT_QUEUED));
+            player.sendMessage(MiniMessage.miniMessage().deserialize(Config.NOT_QUEUED));
         } else {
             serverWrapper.removeFromQueue(player.getUniqueId());
-            player.sendMessage(MiniMessage.get().parse(Config.LEFT_QUEUE
+            player.sendMessage(MiniMessage.miniMessage().deserialize(Config.LEFT_QUEUE
                     .replace("{server}", serverWrapper.getServerInfo().getName())
                     .replace("{position}", serverWrapper.getPosition(player.getUniqueId()) + "")));
         }

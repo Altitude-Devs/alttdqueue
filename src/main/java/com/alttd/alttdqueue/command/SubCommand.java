@@ -11,7 +11,7 @@ public abstract class SubCommand {
     private final MiniMessage miniMessage;
 
     public SubCommand() {
-        miniMessage = MiniMessage.get();
+        miniMessage = MiniMessage.miniMessage();
     }
 
     public abstract void onCommand(CommandSource source, String[] args);
