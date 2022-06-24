@@ -7,20 +7,20 @@ import net.kyori.adventure.text.Component;
 public class Util {
 
     public static void enforceWhitelistForServer(String serverName, RegisteredServer server, Component kickMessage) {
-        RegisteredServer lobby = AlttdQueue.getInstance().getServerManager().getLobby();
+        RegisteredServer lobby = null;
+        try {
+            lobby = AlttdQueue.getInstance().getServerManager().getLobby();
+        } catch (IllegalStateException ignored) {
+        }
 
-//        if (optionalDefaultServer.isEmpty() || optionalDefaultServer.get().equals(server)) {
-//            AlttdQueue.getInstance().getLogger().warn("Unable to find default server or enforcing whitelist on default server, kicking all players without permission to be here.");
-//            server.getPlayersConnected().stream()
-//                    .filter(player -> !player.hasPermission("permissionwhitelist.join.all") && !player.hasPermission("permissionwhitelist.join." + serverName))
-//                    .forEach(player -> player.disconnect(kickMessage));
-//            return;
-//        }
-
+        RegisteredServer finalLobby = lobby;
         server.getPlayersConnected().stream()
                 .filter(player -> !player.hasPermission("permissionwhitelist.join.all") && !player.hasPermission("permissionwhitelist.join." + serverName))
                 .forEach(player -> {
-                    player.createConnectionRequest(lobby);
+                    if (finalLobby != null)
+                        player.createConnectionRequest(finalLobby);
+                    else
+                        player.disconnect(kickMessage);
                     player.sendMessage(kickMessage);
                 });
     }
