@@ -328,7 +328,7 @@ public class ServerWrapper
 
     public void setWhiteList(boolean val) {
         this.whiteList = val;
-        ServerConfig.setAndSave(serverConfig.configPath + "hasWhiteList", val);
+        ServerConfig.setAndSaveUnsafe(serverConfig.configPath + "hasWhiteList", val);
     }
 
     /**

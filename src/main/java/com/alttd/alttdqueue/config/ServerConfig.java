@@ -30,10 +30,19 @@ public final class ServerConfig {
         Config.saveConfig();
     }
 
+    public static void setAndSaveUnsafe(String path, Object def) {
+        setUnsafe(path, def);
+        Config.saveConfig();
+    }
+
     private static void set(String path, Object def) {
         if(Config.config.getNode(splitPath(path)).isVirtual()) {
             Config.config.getNode(splitPath(path)).setValue(def);
         }
+    }
+
+    private static void setUnsafe(String path, Object def) {
+        Config.config.getNode(splitPath(path)).setValue(def);
     }
 
     private boolean getBoolean(String path, boolean def) {
