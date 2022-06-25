@@ -18,7 +18,7 @@ public class Util {
                 .filter(player -> !player.hasPermission("permissionwhitelist.join.all") && !player.hasPermission("permissionwhitelist.join." + serverName))
                 .forEach(player -> {
                     if (finalLobby != null)
-                        player.createConnectionRequest(finalLobby);
+                        player.createConnectionRequest(finalLobby).connectWithIndication();
                     else
                         player.disconnect(kickMessage);
                     player.sendMessage(kickMessage);
