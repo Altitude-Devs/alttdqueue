@@ -1,7 +1,8 @@
-package com.alttd.alttdqueue.command.whitelistSubcommands;
+package com.alttd.alttdqueue.command.queueSubcommands;
 
-import com.alttd.alttdqueue.command.WhitelistCommandManager;
+import com.alttd.alttdqueue.command.QueueCommandManager;
 import com.alttd.alttdqueue.command.SubCommand;
+import com.alttd.alttdqueue.command.WhitelistCommandManager;
 import com.alttd.alttdqueue.config.Messages;
 import com.velocitypowered.api.command.CommandSource;
 
@@ -11,16 +12,15 @@ import java.util.stream.Collectors;
 
 public class CommandHelp extends SubCommand {
 
-    private final WhitelistCommandManager whitelistCommandManager;
+    private final QueueCommandManager queueCommandManager;
 
-    public CommandHelp(WhitelistCommandManager whitelistCommandManager) {
-        super();
-        this.whitelistCommandManager = whitelistCommandManager;
+    public CommandHelp(QueueCommandManager queueCommandManager) {
+        this.queueCommandManager = queueCommandManager;
     }
 
     @Override
     public void onCommand(CommandSource source, String[] args) {
-        source.sendMessage(getMiniMessage().deserialize(Messages.PW_HELP_MESSAGE_WRAPPER.replaceAll("<commands>", whitelistCommandManager
+        source.sendMessage(getMiniMessage().deserialize(Messages.Q_HELP_MESSAGE_WRAPPER.replaceAll("<commands>", queueCommandManager
                 .getSubCommands().stream()
                 .filter(subCommand -> source.hasPermission(subCommand.getPermission()))
                 .map(SubCommand::getHelpMessage)
@@ -39,6 +39,6 @@ public class CommandHelp extends SubCommand {
 
     @Override
     public String getHelpMessage() {
-        return Messages.PW_HELP_COMMAND_HELP;
+        return Messages.Q_HELP_COMMAND_HELP;
     }
 }

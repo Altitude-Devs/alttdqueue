@@ -1,7 +1,7 @@
 package com.alttd.alttdqueue;
 
+import com.alttd.alttdqueue.command.QueueCommandManager;
 import com.alttd.alttdqueue.command.WhitelistCommandManager;
-import com.alttd.alttdqueue.command.Queue;
 import com.alttd.alttdqueue.config.Config;
 import com.alttd.alttdqueue.listeners.ConnectionListener;
 import com.alttd.alttdqueue.managers.ServerManager;
@@ -42,9 +42,9 @@ public class AlttdQueue {
         serverManager = new ServerManager(plugin);
         serverManager.initialize();
         server.getEventManager().register(this, new ConnectionListener(this));
-        new Queue(this);
         //server.getCommandManager().register(new queueCommand(this), "queue");
         server.getCommandManager().register("permissionwhitelist", new WhitelistCommandManager());
+        server.getCommandManager().register("queue", new QueueCommandManager(this));
     }
 
     public ProxyServer getProxy() {

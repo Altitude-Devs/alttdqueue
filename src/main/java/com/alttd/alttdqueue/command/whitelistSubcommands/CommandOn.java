@@ -66,6 +66,6 @@ public class CommandOn extends SubCommand {
 
     @Override
     public String getHelpMessage() {
-        return Messages.HELP_COMMAND_ON;
+        return Messages.PW_HELP_COMMAND_ON;
     }
 }

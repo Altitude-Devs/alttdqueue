@@ -60,6 +60,6 @@ public class CommandOff extends SubCommand {
 
     @Override
     public String getHelpMessage() {
-        return Messages.HELP_COMMAND_OFF;
+        return Messages.PW_HELP_COMMAND_OFF;
     }
 }

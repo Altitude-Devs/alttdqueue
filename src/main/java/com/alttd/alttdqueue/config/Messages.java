@@ -157,16 +157,31 @@ public final class Messages {
         WHITELIST_OFF = getString("messages.enforced-whitelist", WHITELIST_OFF);
     }
 
-    public static String HELP_MESSAGE_WRAPPER = "<gold>PermissionWhitelist help:\n<commands></gold>";
-    public static String HELP_COMMAND_OFF = "<gold>/permissionwhitelist off <server></gold>: <green>Turns the whitelist off for specified server</green>";
-    public static String HELP_COMMAND_ON = "<gold>/permissionwhitelist on <server></gold>: <green>Turns the whitelist on for specified server</green>";
-    public static String HELP_COMMAND_HELP = "<gold>/permissionwhitelist help</gold>: <green>Shows this menu</green>";
-    public static String HELP_COMMAND_ENFORCE = "<gold>/permissionwhitelist enforce <server></gold>: <green>Enforces whitelist for specified server</green>";
+    public static String PW_HELP_MESSAGE_WRAPPER = "<gold>PermissionWhitelist help:\n<commands></gold>";
+    public static String PW_HELP_COMMAND_OFF = "<gold>/permissionwhitelist off <server></gold>: <green>Turns the whitelist off for specified server</green>";
+    public static String PW_HELP_COMMAND_ON = "<gold>/permissionwhitelist on <server></gold>: <green>Turns the whitelist on for specified server</green>";
+    public static String PW_HELP_COMMAND_HELP = "<gold>/permissionwhitelist help</gold>: <green>Shows this menu</green>";
+    public static String PW_HELP_COMMAND_ENFORCE = "<gold>/permissionwhitelist enforce <server></gold>: <green>Enforces whitelist for specified server</green>";
+    private static void loadPermissionWhitelistHelp() {
+        PW_HELP_MESSAGE_WRAPPER = getString("help.wrapper", PW_HELP_MESSAGE_WRAPPER);
+        PW_HELP_COMMAND_OFF = getString("help.command-off", PW_HELP_COMMAND_OFF);
+        PW_HELP_COMMAND_ON = getString("help.command-on", PW_HELP_COMMAND_ON);
+        PW_HELP_COMMAND_HELP = getString("help.command-help", PW_HELP_COMMAND_HELP);
+        PW_HELP_COMMAND_ENFORCE = getString("help.command-enforce", PW_HELP_COMMAND_ENFORCE);
+    }
+
+    public static String Q_HELP_MESSAGE_WRAPPER = "<gold>Queue help:\n<commands></gold>";
+    public static String Q_HELP_COMMAND_HELP = "<gold>/queue help</gold>: <green>Shows this menu</green>";
+    public static String Q_HELP_COMMAND_INFO = "<gold>/queue info [server]</gold>: <green>Displays info for the current queue</green>";
+    public static String Q_HELP_COMMAND_LEAVE = "<gold>/queue leave</gold>: <green>Leave the queue you're in</green>";
+    public static String Q_HELP_COMMAND_RELOAD = "<gold>/queue reload</gold>: <green>Reload the queue plugin</green>";
     private static void loadCommandMessages() {
-        HELP_MESSAGE_WRAPPER = getString("help.wrapper", HELP_MESSAGE_WRAPPER);
-        HELP_COMMAND_OFF = getString("help.command-off", HELP_COMMAND_OFF);
-        HELP_COMMAND_ON = getString("help.command-on", HELP_COMMAND_ON);
-        HELP_COMMAND_HELP = getString("help.command-help", HELP_COMMAND_HELP);
-        HELP_COMMAND_ENFORCE = getString("help.command-enforce", HELP_COMMAND_ENFORCE);
+        String path = "queue-help.";
+
+        Q_HELP_COMMAND_HELP = getString(path + "help", Q_HELP_COMMAND_HELP);
+        Q_HELP_MESSAGE_WRAPPER = getString(path + "wrapper", Q_HELP_MESSAGE_WRAPPER);
+        Q_HELP_COMMAND_INFO = getString(path + "info", Q_HELP_COMMAND_INFO);
+        Q_HELP_COMMAND_LEAVE = getString(path + "leave", Q_HELP_COMMAND_LEAVE);
+        Q_HELP_COMMAND_RELOAD = getString(path + "reload", Q_HELP_COMMAND_RELOAD);
     }
 }
