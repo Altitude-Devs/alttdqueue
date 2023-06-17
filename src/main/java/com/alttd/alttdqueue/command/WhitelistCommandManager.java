@@ -14,11 +14,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CommandManager implements SimpleCommand {
+public class WhitelistCommandManager implements SimpleCommand {
 
     private final List<SubCommand> subCommands;
 
-    public CommandManager() {
+    public WhitelistCommandManager() {
         subCommands = Arrays.asList(
                 new CommandOn(),
                 new CommandOff(),

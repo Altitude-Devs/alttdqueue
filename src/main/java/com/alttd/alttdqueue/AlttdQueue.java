@@ -1,6 +1,6 @@
 package com.alttd.alttdqueue;
 
-import com.alttd.alttdqueue.command.CommandManager;
+import com.alttd.alttdqueue.command.WhitelistCommandManager;
 import com.alttd.alttdqueue.command.Queue;
 import com.alttd.alttdqueue.config.Config;
 import com.alttd.alttdqueue.listeners.ConnectionListener;
@@ -8,7 +8,6 @@ import com.alttd.alttdqueue.managers.ServerManager;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
-import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -45,7 +44,7 @@ public class AlttdQueue {
         server.getEventManager().register(this, new ConnectionListener(this));
         new Queue(this);
         //server.getCommandManager().register(new queueCommand(this), "queue");
-        server.getCommandManager().register("permissionwhitelist", new CommandManager());
+        server.getCommandManager().register("permissionwhitelist", new WhitelistCommandManager());
     }
 
     public ProxyServer getProxy() {
