@@ -73,10 +73,12 @@ public final class ServerConfig {
     public boolean hasPriorityQueue = false;
     public int maxPlayers = 50;
     public boolean hasWhiteList = false;
+    public boolean staffCountTowardsPlayerLimit = false; // rename this var
     private void ServerSettings() {
         maxPlayers = getInt("maxplayer", maxPlayers);
         isLobby = getBoolean("islobby", isLobby);
         hasPriorityQueue = getBoolean("hasPriorityQueue", hasPriorityQueue);
         hasWhiteList = getBoolean("hasWhiteList", hasWhiteList);
+        staffCountTowardsPlayerLimit = getBoolean("staffCountTowardsPlayerLimit", staffCountTowardsPlayerLimit);
     }
 }

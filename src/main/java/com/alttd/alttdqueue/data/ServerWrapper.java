@@ -165,7 +165,19 @@ public class ServerWrapper
      */
     public boolean isFull()
     {
-        return registeredServer.getPlayersConnected().size() >= maxPlayers;
+        if (registeredServer.getPlayersConnected().size() >= maxPlayers) {
+            if (serverConfig.staffCountTowardsPlayerLimit) {
+                return true;
+            }
+            int count = 0;
+            for (Player player : registeredServer.getPlayersConnected()) {
+                if (!player.hasPermission("altiqueue.skip-queue")) { // If they skip queue they should not count
+                    count++;
+                }
+            }
+            return count >= maxPlayers;
+        }
+        return false;
     }
 
     /**
