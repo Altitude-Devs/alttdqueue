@@ -42,12 +42,13 @@ public final class ServerManager
             // Check if this server has a Queue
             if (serverWrapper.hasQueue())
             {
-                List<UUID> queuedPlayers = serverWrapper.getQueuedPlayers(serverWrapper.getRoom());
-                // go through the queued players and remove them from the queue
-                while (!queuedPlayers.isEmpty())
-                {
-                    serverWrapper.removeFromQueue(queuedPlayers.remove(0));
-                }
+                serverWrapper.clear();
+//                List<UUID> queuedPlayers = serverWrapper.getQueuedPlayers(serverWrapper.getRoom());
+//                // go through the queued players and remove them from the queue
+//                while (!queuedPlayers.isEmpty())
+//                {
+//                    serverWrapper.removeFromQueue(queuedPlayers.remove(0));
+//                }
             }
         }
     }
@@ -63,48 +64,48 @@ public final class ServerManager
         for (RegisteredServer registeredServer : plugin.getProxy().getAllServers())
         {
             //plugin.getLogger().info("adding " + registeredServer.getServerInfo().getName());
-            servers.add(new ServerWrapper(registeredServer, new ServerConfig(registeredServer.getServerInfo().getName())));
+            servers.add(new ServerWrapper(registeredServer, new ServerConfig(registeredServer.getServerInfo().getName()), plugin));
         }
 
         // periodically connect players to their desired server
-        queueTask = plugin.getProxy().getScheduler().buildTask(plugin, () ->
-        {
-            // go through the servers that are not lobbies...
-            for (ServerWrapper serverWrapper : servers.stream().filter(wrapper -> !wrapper.isLobby()).collect(Collectors.toList()))
-            {
-                // check if they have room and if there's an active queue...
-                if (!serverWrapper.isFull() && serverWrapper.hasQueue())
-                {
-                    List<UUID> queuedPlayers = serverWrapper.getQueuedPlayers(serverWrapper.getRoom());
-                    // go through the queued players that we have room for...
-                    while (!queuedPlayers.isEmpty())
-                    {
-                        Optional<Player> player = plugin.getProxy().getPlayer(queuedPlayers.remove(0));
-
-                        if (player.isPresent())
-                        {
-                            Player presentPlayer = player.get();
-                            // and send them to that server!
-                            serverWrapper.addNextInQueue(presentPlayer);
-
-                            presentPlayer.createConnectionRequest(serverWrapper.getRegisteredServer()).connect().thenAccept(
-                                    result -> {
-                                        AtomicInteger tries = playerTries.getOrDefault(presentPlayer.getUniqueId(), new AtomicInteger(0));
-                                        if (result != null && result.isSuccessful() || tries.get() > 3) {
-                                            serverWrapper.removeNextInQueue(presentPlayer);
-                                            playerTries.remove(presentPlayer.getUniqueId());
-                                        }
-                                        tries.incrementAndGet();
-                                    }
-                            );
-                            presentPlayer.sendMessage(MiniMessage.miniMessage().deserialize(Config.CONNECT.replace("{server}", serverWrapper.getServerInfo().getName())));
-                            //Lang.CONNECT.sendInfo(player,
-                            //        "{server}", serverWrapper.getServerInfo().getName());
-                        }
-                    }
-                }
-            }
-        }).repeat(Config.QUEUE_FREQUENCY, TimeUnit.SECONDS).schedule();
+//        queueTask = plugin.getProxy().getScheduler().buildTask(plugin, () ->
+//        {
+//            // go through the servers that are not lobbies...
+//            for (ServerWrapper serverWrapper : servers.stream().filter(wrapper -> !wrapper.isLobby()).collect(Collectors.toList()))
+//            {
+//                // check if they have room and if there's an active queue...
+//                if (!serverWrapper.isFull() && serverWrapper.hasQueue())
+//                {
+//                    List<UUID> queuedPlayers = serverWrapper.getQueuedPlayers(serverWrapper.getRoom());
+//                    // go through the queued players that we have room for...
+//                    while (!queuedPlayers.isEmpty())
+//                    {
+//                        Optional<Player> player = plugin.getProxy().getPlayer(queuedPlayers.remove(0));
+//
+//                        if (player.isPresent())
+//                        {
+//                            Player presentPlayer = player.get();
+//                            // and send them to that server!
+//                            serverWrapper.addNextInQueue(presentPlayer);
+//
+//                            presentPlayer.createConnectionRequest(serverWrapper.getRegisteredServer()).connect().thenAccept(
+//                                    result -> {
+//                                        AtomicInteger tries = playerTries.getOrDefault(presentPlayer.getUniqueId(), new AtomicInteger(0));
+//                                        if (result != null && result.isSuccessful() || tries.get() > 3) {
+//                                            serverWrapper.removeNextInQueue(presentPlayer);
+//                                            playerTries.remove(presentPlayer.getUniqueId());
+//                                        }
+//                                        tries.incrementAndGet();
+//                                    }
+//                            );
+//                            presentPlayer.sendMessage(MiniMessage.miniMessage().deserialize(Config.CONNECT.replace("{server}", serverWrapper.getServerInfo().getName())));
+//                            //Lang.CONNECT.sendInfo(player,
+//                            //        "{server}", serverWrapper.getServerInfo().getName());
+//                        }
+//                    }
+//                }
+//            }
+//        }).repeat(Config.QUEUE_FREQUENCY, TimeUnit.SECONDS).schedule();
     }
 
     /**

@@ -9,6 +9,7 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,12 +38,19 @@ public class CommandList extends SubCommand {
 
     @Override
     public List<String> getTabComplete(CommandSource source, String[] args) {
-        return null;
+        if (args.length != 2) {
+            return List.of();
+        }
+        List<String> possibleValues = new ArrayList<>();
+        for (ServerWrapper serverWrapper : plugin.getServerManager().getServersQueue()) {
+            possibleValues.add(serverWrapper.getServerInfo().getName());
+        }
+        return possibleValues;
     }
 
     @Override
     public String getHelpMessage() {
-        return null;
+        return Messages.Q_HELP_COMMAND_LIST;
     }
 
     private void playerQueueList(CommandSource source) {

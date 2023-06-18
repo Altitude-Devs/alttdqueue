@@ -20,7 +20,8 @@ public class QueueCommandManager implements SimpleCommand {
                 new CommandInfo(plugin),
                 new CommandLeave(plugin),
                 new CommandList(plugin),
-                new CommandReload(plugin)
+                new CommandReload(plugin),
+                new CommandListOnline(plugin)
                 );
     }
 

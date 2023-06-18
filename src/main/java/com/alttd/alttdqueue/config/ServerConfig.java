@@ -92,7 +92,7 @@ public final class ServerConfig {
     }
 
     public boolean isLobby = false;
-    public Priority[] priorityOrder = {Priority.LOW};
+    public Priority[] priorityOrder = {Priority.HIGH, Priority.MID, Priority.MID, Priority.LOW};
     public int maxPlayers = 50;
     public boolean hasWhiteList = false;
 

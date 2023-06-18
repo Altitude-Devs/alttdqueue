@@ -3,6 +3,7 @@ package com.alttd.alttdqueue;
 import com.alttd.alttdqueue.command.QueueCommandManager;
 import com.alttd.alttdqueue.command.WhitelistCommandManager;
 import com.alttd.alttdqueue.config.Config;
+import com.alttd.alttdqueue.config.Messages;
 import com.alttd.alttdqueue.listeners.ConnectionListener;
 import com.alttd.alttdqueue.managers.ServerManager;
 import com.google.inject.Inject;
@@ -39,6 +40,7 @@ public class AlttdQueue {
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
         Config.init(getDataDirectory());
+        Messages.init(getDataDirectory());
         serverManager = new ServerManager(plugin);
         serverManager.initialize();
         server.getEventManager().register(this, new ConnectionListener(this));
@@ -66,6 +68,7 @@ public class AlttdQueue {
     public void reload() {
         getServerManager().queueTask.cancel();
         Config.init(getDataDirectory());
+        Messages.init(getDataDirectory());
         serverManager.cleanup();
         serverManager.initialize();
     }

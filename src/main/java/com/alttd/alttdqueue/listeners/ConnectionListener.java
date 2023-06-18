@@ -8,14 +8,17 @@ import com.alttd.alttdqueue.data.ServerWrapper;
 import com.alttd.alttdqueue.managers.ServerManager;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
+import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.jetbrains.annotations.Contract;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public class ConnectionListener {
 
@@ -29,6 +32,27 @@ public class ConnectionListener {
     }
 
     @Subscribe
+    public void onServerConnected(ServerConnectedEvent event) {
+        Player player = event.getPlayer();
+        UUID uuid = player.getUniqueId();
+        event.getPreviousServer().ifPresent(prevServer -> {
+            ServerWrapper server = serverManager.getServer(prevServer);
+            if (server == null)
+                return;
+            server.removeOnlinePlayer(uuid);
+        });
+
+        if (player.hasPermission(Config.SKIP_QUEUE)) { //Only add non staff
+            return;
+        }
+        ServerWrapper server = serverManager.getServer(event.getServer());
+        if (server == null)
+            return;
+        server.addOnlinePlayer(uuid);
+    }
+
+    //TODO more
+    @Subscribe
     public void onConnect(ServerPreConnectEvent event) {
         Player player = event.getPlayer();
         ServerWrapper currentServer = serverManager.getServer(player.getCurrentServer().isPresent() ? player.getCurrentServer().get().getServer() : null);
@@ -36,7 +60,6 @@ public class ConnectionListener {
         if (server.isEmpty())
             return;
         ServerWrapper wrapper = serverManager.getServer(server.get());
-        ServerPreConnectEvent.ServerResult result = event.getResult();
         String serverName = wrapper.getServerInfo().getName().toLowerCase();
 
         // check if they are whitelisted
@@ -54,6 +77,8 @@ public class ConnectionListener {
 
         // if they can skip the queue, we don't need to worry about them
         if (player.hasPermission(Config.SKIP_QUEUE)) {
+            if (currentServer != null)
+                currentServer.playerLeaveServer(player.getUniqueId());
             return;
         }
 
@@ -61,16 +86,16 @@ public class ConnectionListener {
             // if they are from outside the network and their target has a queue, boot them to lobby and add them to queue
             if (currentServer == null) {
                 event.setResult(ServerPreConnectEvent.ServerResult.allowed(serverManager.getLobby()));
-                wrapper.addQueue(player);
+                wrapper.addQueue(player); //todo check if they really entered the server if not freak out
                 player.sendMessage(MiniMessage.miniMessage().deserialize(Config.DIRECT_CONNECT_FULL
                                 .replace("{server}", wrapper.getServerInfo().getName())
-                                .replace("{position}", wrapper.getPosition(player.getUniqueId())+""))
+                                .replace("{position}", String.valueOf(wrapper.getPosition(player.getUniqueId()))))
                         );
                 return;
             }
-            if (wrapper.isNextInQueue(player)) {
-                return;
-            }
+//            if (wrapper.isNextInQueue(player)) {
+//                return;
+//            }
         }
 
         // if it's not a lobby, or it is a lobby but it's full...
@@ -83,7 +108,15 @@ public class ConnectionListener {
 
             QueueResponse response = wrapper.addQueue(player);
             //AltiQueue.getInstance().send(wrapper.getServerInfo().getName(), wrapper.getQueuedPlayerList());
-            if (response == QueueResponse.NOT_FULL || response == QueueResponse.SKIP_QUEUE) {
+            if (response == QueueResponse.NOT_FULL) {
+                if (currentServer != null)
+                    currentServer.playerLeaveServer(player.getUniqueId());
+                return;
+            }
+
+            if (response == QueueResponse.SKIP_QUEUE) {
+                if (currentServer != null)
+                    currentServer.playerLeaveServer(player.getUniqueId());
                 return;
             }
 
@@ -125,10 +158,22 @@ public class ConnectionListener {
 
     @Subscribe
     public void onDisconnect(DisconnectEvent event) {
-        ServerWrapper wrapper = serverManager.getQueuedServer(event.getPlayer().getUniqueId());
+        Player player = event.getPlayer();
+        UUID uuid = player.getUniqueId();
+        Optional<ServerConnection> currentServer = player.getCurrentServer();
+        if (currentServer.isPresent()) {
+            ServerWrapper server = serverManager.getServer(currentServer.get().getServer());
+            if (server != null)
+                server.playerLeaveServer(uuid);
+        }
+        ServerWrapper wrapper = serverManager.getQueuedServer(uuid);
 
         if (wrapper != null) {
-            wrapper.removeFromQueue(event.getPlayer().getUniqueId());
+            wrapper.playerLeaveServer(uuid);
+            wrapper.removeFromQueue(uuid);
+        }
+        for (ServerWrapper serverWrapper : serverManager.getServersQueue()) {
+            serverWrapper.playerLeaveServer(uuid);
         }
     }
 }

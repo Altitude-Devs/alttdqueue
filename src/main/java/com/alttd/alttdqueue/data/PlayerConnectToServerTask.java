@@ -11,11 +11,11 @@ import java.util.concurrent.TimeUnit;
 public class PlayerConnectToServerTask implements Runnable {
     private final QueuePlayer queuePlayer;
     private final Player player;
-    private final NewServerWrapper newServerWrapper;
-    public PlayerConnectToServerTask(QueuePlayer queuePlayer, Player player, NewServerWrapper newServerWrapper) {
+    private final ServerWrapper serverWrapper;
+    public PlayerConnectToServerTask(QueuePlayer queuePlayer, Player player, ServerWrapper serverWrapper) {
         this.queuePlayer = queuePlayer;
         this.player = player;
-        this.newServerWrapper = newServerWrapper;
+        this.serverWrapper = serverWrapper;
     }
 
     @Override
@@ -24,11 +24,11 @@ public class PlayerConnectToServerTask implements Runnable {
     }
 
     private void tryConnect(int attempt) {
-        player.createConnectionRequest(newServerWrapper.getRegisteredServer()).connect().thenAccept(
+        player.createConnectionRequest(serverWrapper.getRegisteredServer()).connect().thenAccept(
                 result -> {
                     if (result == null || !result.isSuccessful()) {
                         if (attempt > 3) {
-                            newServerWrapper.removeOnlinePlayerDueToError(player.getUniqueId());
+                            serverWrapper.playerLeaveServer(player.getUniqueId());
                             player.disconnect(MiniMessage.miniMessage().deserialize("<red>Queue failed to connect you, please rejoin the server and queue.</red>")); //TODO config
                         } else {
                             tryConnect(attempt + 1);
@@ -37,7 +37,7 @@ public class PlayerConnectToServerTask implements Runnable {
                     }
                     player.sendMessage(MiniMessage.miniMessage().deserialize(Messages.SENDING_TO_SERVER,
                             TagResolver.resolver(
-                                    Placeholder.parsed("server", newServerWrapper.getRegisteredServer().getServerInfo().getName()),
+                                    Placeholder.parsed("server", serverWrapper.getRegisteredServer().getServerInfo().getName()),
                                     Placeholder.parsed("time", String.valueOf(TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - queuePlayer.queueJoinTime()))))));
                 }
         );
