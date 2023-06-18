@@ -55,7 +55,7 @@ public final class Messages {
         verbose = getBoolean("verbose", true);
         version = getInt("config-version", 1);
 
-        readConfig(Config.class, null);
+        readConfig(Messages.class, null);
         try {
             configLoader.save(config);
         } catch (IOException e) {
