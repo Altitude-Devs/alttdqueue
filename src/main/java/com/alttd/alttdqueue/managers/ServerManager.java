@@ -4,12 +4,10 @@ import com.alttd.alttdqueue.AlttdQueue;
 import com.alttd.alttdqueue.config.Config;
 import com.alttd.alttdqueue.config.ServerConfig;
 import com.alttd.alttdqueue.data.ServerWrapper;
-import com.velocitypowered.api.proxy.ConnectionRequestBuilder;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import com.velocitypowered.api.scheduler.ScheduledTask;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 import java.util.*;

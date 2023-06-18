@@ -184,4 +184,12 @@ public final class Messages {
         Q_HELP_COMMAND_LEAVE = getString(path + "leave", Q_HELP_COMMAND_LEAVE);
         Q_HELP_COMMAND_RELOAD = getString(path + "reload", Q_HELP_COMMAND_RELOAD);
     }
+
+    public static String SENDING_TO_SERVER = "<green>Sending you to <server> after <time> minutes in queue!";
+
+    private static void loadOtherMessages() {
+        String path = "other.";
+
+        SENDING_TO_SERVER = getString(path + "sending-to-server", SENDING_TO_SERVER);
+    }
 }

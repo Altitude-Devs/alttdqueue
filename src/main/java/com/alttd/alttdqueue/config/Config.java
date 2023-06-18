@@ -1,11 +1,8 @@
 package com.alttd.alttdqueue.config;
 
 import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableMap;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.yaml.snakeyaml.DumperOptions;
 
 import java.io.File;
@@ -13,8 +10,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 public final class Config {
@@ -142,6 +137,8 @@ public final class Config {
     }
 
     public static String PRIORITY_QUEUE = "altiqueue.priority-queue";
+    public static String PERM_QUEUE_HIGH = "altiqueue.priority-high";
+    public static String PERM_QUEUE_MID = "altiqueue.priority-mid";
     public static String SKIP_QUEUE = "altiqueue.skip-queue";
     public static String QUEUE_COMMAND = "altiqueue.queue-command";
     public static String QUEUERELOAD_COMMAND = "altiqueue.queuereload-command";
@@ -150,6 +147,8 @@ public final class Config {
     public static String COMMAND_BASE_PREFIX = "altiqueue.command";
     private static void Permissions() {
         PRIORITY_QUEUE = getString("permission.priority-queue", PRIORITY_QUEUE);
+        PERM_QUEUE_HIGH = getString("permission.priority-high", PERM_QUEUE_HIGH);
+        PERM_QUEUE_MID = getString("permission.priority-mid", PERM_QUEUE_MID);
         SKIP_QUEUE = getString("permission.skip-queue", SKIP_QUEUE);
         QUEUE_COMMAND = getString("permission.queue-command", QUEUE_COMMAND);
         QUEUERELOAD_COMMAND = getString("permission.queuereload-command", QUEUERELOAD_COMMAND);

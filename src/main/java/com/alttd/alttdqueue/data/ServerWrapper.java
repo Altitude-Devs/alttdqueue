@@ -36,7 +36,7 @@ public class ServerWrapper
         this.registeredServer = registeredServer;
 
         this.maxPlayers = serverConfig.maxPlayers;
-        this.hasPriorityQueue = serverConfig.hasPriorityQueue;
+        this.hasPriorityQueue = true;
         this.lobby = serverConfig.isLobby;
         this.whiteList = serverConfig.hasWhiteList;
 
