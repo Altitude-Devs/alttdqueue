@@ -3,6 +3,7 @@ package com.alttd.alttdqueue.data;
 import com.alttd.alttdqueue.AlttdQueue;
 import com.alttd.alttdqueue.config.Config;
 import com.alttd.alttdqueue.config.ServerConfig;
+import com.alttd.alttdqueue.listeners.ConnectionListener;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
@@ -32,8 +33,9 @@ public class ServerWrapper {
 
     private ServerConfig serverConfig;
     private final AlttdQueue plugin;
+    private final ConnectionListener connectionListener;
 
-    public ServerWrapper(RegisteredServer registeredServer, ServerConfig serverConfig, AlttdQueue plugin) {
+    public ServerWrapper(RegisteredServer registeredServer, ServerConfig serverConfig, AlttdQueue plugin, ConnectionListener connectionListener) {
         this.registeredServer = registeredServer;
 
         this.maxPlayers = serverConfig.maxPlayers;
@@ -47,6 +49,7 @@ public class ServerWrapper {
         this.midPriorityQueue = new LinkedList<>();
         this.lowPriorityQueue = new LinkedList<>();
         this.serverConfig = serverConfig;
+        this.connectionListener = connectionListener;
         onlinePlayers = new HashSet<>();
         updateOnlinePlayers();
     }
@@ -65,7 +68,7 @@ public class ServerWrapper {
     private void allowNextPlayerThrough() {
         if (!hasQueue())
             return;
-        if (posInPriority < priorityOrder.length) {
+        if (posInPriority < priorityOrder.length - 1) { //Increase the spot of the current priority since we're letting one player join
             posInPriority++;
         } else {
             posInPriority = 0;
@@ -81,11 +84,7 @@ public class ServerWrapper {
 
         Player player = optionalPlayer.get();
         //Running this in a new thread so it can properly use #removeOnlinePlayerDueToError if needed and so the server wrapper isn't waiting on the player to connect
-        new Thread(new PlayerConnectToServerTask(queuePlayer, player, this)).start();
-    }
-
-    public synchronized void removeOnlinePlayer(UUID uuid) {
-        onlinePlayers.remove(uuid);
+        new Thread(new PlayerConnectToServerTask(queuePlayer, player, this, plugin, connectionListener)).start();
     }
 
     /**
@@ -183,7 +182,6 @@ public class ServerWrapper {
         lowPriorityQueue.remove(queuePlayer);
     }
 
-
     /**
      * Returns {@code true} if there are less players connected than the limit.
      *
@@ -225,10 +223,10 @@ public class ServerWrapper {
         int playersAddedToQueue = 0;
         while (playersAddedToQueue < size) {
             playersAddedToQueue += placeNextPlayerInQueue(priorityOrder[priorityPos], highQueue, midQueue, lowQueue);
-            if (priorityPos == priorityOrder.length - 1) {
-                priorityPos = 0;
-            } else {
+            if (priorityPos < priorityOrder.length - 1) {
                 priorityPos++;
+            } else {
+                priorityPos = 0;
             }
         }
     }

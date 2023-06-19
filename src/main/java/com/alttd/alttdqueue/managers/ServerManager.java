@@ -4,14 +4,12 @@ import com.alttd.alttdqueue.AlttdQueue;
 import com.alttd.alttdqueue.config.Config;
 import com.alttd.alttdqueue.config.ServerConfig;
 import com.alttd.alttdqueue.data.ServerWrapper;
-import com.velocitypowered.api.proxy.Player;
+import com.alttd.alttdqueue.listeners.ConnectionListener;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import com.velocitypowered.api.scheduler.ScheduledTask;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -29,9 +27,10 @@ public final class ServerManager
 
     private HashMap<UUID, AtomicInteger> playerTries;
 
-    public ServerManager(AlttdQueue plugin)
-    {
+    private final ConnectionListener connectionListener;
+    public ServerManager(AlttdQueue plugin, ConnectionListener connectionListener) {
         this.plugin = plugin;
+        this.connectionListener = connectionListener;
     }
 
     public void cleanup()
@@ -64,7 +63,7 @@ public final class ServerManager
         for (RegisteredServer registeredServer : plugin.getProxy().getAllServers())
         {
             //plugin.getLogger().info("adding " + registeredServer.getServerInfo().getName());
-            servers.add(new ServerWrapper(registeredServer, new ServerConfig(registeredServer.getServerInfo().getName()), plugin));
+            servers.add(new ServerWrapper(registeredServer, new ServerConfig(registeredServer.getServerInfo().getName()), plugin, connectionListener));
         }
 
         // periodically connect players to their desired server

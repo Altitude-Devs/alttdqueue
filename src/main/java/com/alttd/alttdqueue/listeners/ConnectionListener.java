@@ -17,18 +17,22 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.jetbrains.annotations.Contract;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
 
 public class ConnectionListener {
 
     private final AlttdQueue plugin;
-    private final ServerManager serverManager;
+    private ServerManager serverManager;
 
     @Contract(pure = true)
     public ConnectionListener(AlttdQueue plugin) {
         this.plugin = plugin;
-        this.serverManager = plugin.getServerManager();
+    }
+
+    public void init(ServerManager serverManager) {
+        this.serverManager = serverManager;
     }
 
     @Subscribe
@@ -39,7 +43,7 @@ public class ConnectionListener {
             ServerWrapper server = serverManager.getServer(prevServer);
             if (server == null)
                 return;
-            server.removeOnlinePlayer(uuid);
+            server.playerLeaveServer(uuid);
         });
 
         if (player.hasPermission(Config.SKIP_QUEUE)) { //Only add non staff
@@ -73,6 +77,10 @@ public class ConnectionListener {
                 player.sendMessage(MiniMessage.miniMessage().deserialize(Messages.NOT_WHITELISTED, Placeholder.unparsed("server", serverName)));
                 return;
             }
+        }
+
+        if (removeAllowed(player.getUniqueId())) { //Is allowed through queue
+            return;
         }
 
         // if they can skip the queue, we don't need to worry about them
@@ -172,8 +180,18 @@ public class ConnectionListener {
             wrapper.playerLeaveServer(uuid);
             wrapper.removeFromQueue(uuid);
         }
-        for (ServerWrapper serverWrapper : serverManager.getServersQueue()) {
+        for (ServerWrapper serverWrapper : serverManager.getServersQueue()) { //bad fix maybe?
             serverWrapper.playerLeaveServer(uuid);
         }
+    }
+
+
+    private final HashSet<UUID> allowedPlayers = new HashSet<>();
+    public synchronized void addAllowed(UUID uuid) {
+        allowedPlayers.add(uuid);
+    }
+
+    public synchronized boolean removeAllowed(UUID uuid) {
+        return allowedPlayers.remove(uuid);
     }
 }

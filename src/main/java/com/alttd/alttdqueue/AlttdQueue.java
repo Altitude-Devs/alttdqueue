@@ -41,9 +41,11 @@ public class AlttdQueue {
     public void onProxyInitialization(ProxyInitializeEvent event) {
         Config.init(getDataDirectory());
         Messages.init(getDataDirectory());
-        serverManager = new ServerManager(plugin);
+        ConnectionListener connectionListener = new ConnectionListener(this);
+        serverManager = new ServerManager(plugin, connectionListener);
         serverManager.initialize();
-        server.getEventManager().register(this, new ConnectionListener(this));
+        connectionListener.init(serverManager);
+        server.getEventManager().register(this, connectionListener);
         //server.getCommandManager().register(new queueCommand(this), "queue");
         server.getCommandManager().register("permissionwhitelist", new WhitelistCommandManager());
         server.getCommandManager().register("queue", new QueueCommandManager(this));
