@@ -135,14 +135,14 @@ public class ServerWrapper {
      *
      * @param uuid the uuid of the player.
      *
-     * @return the position that the given player is in the server's queue.
+     * @return the position that the given player is in the server's queue. (starts at 1)
      */
     public int getPosition(UUID uuid)
     {
         int pos = 0;
         for (QueuePlayer queuePlayer : queue) {
             if (queuePlayer.uuid().equals(uuid))
-                return pos;
+                return pos + 1;
             pos++;
         }
         return -1;
