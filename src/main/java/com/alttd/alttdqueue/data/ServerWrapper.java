@@ -117,15 +117,15 @@ public class ServerWrapper {
         if (player.hasPermission(Config.PERM_QUEUE_HIGH)) {
             highPriorityQueue.add(new QueuePlayer(uuid, System.currentTimeMillis(), Priority.HIGH));
             updateQueueOrder();
-            return QueueResponse.ADDED_PRIORITY;
+            return QueueResponse.ADDED_HIGH_PRIORITY;
         } else if (player.hasPermission(Config.PERM_QUEUE_MID)) {
             midPriorityQueue.add(new QueuePlayer(uuid, System.currentTimeMillis(), Priority.MID));
             updateQueueOrder();
-            return QueueResponse.ADDED_PRIORITY;
+            return QueueResponse.ADDED_MID_PRIORITY;
         } else {
             lowPriorityQueue.add(new QueuePlayer(uuid, System.currentTimeMillis(), Priority.LOW));
             updateQueueOrder();
-            return QueueResponse.ADDED_STANDARD;
+            return QueueResponse.ADDED_LOW_PRIORITY;
         }
 
     }
@@ -379,5 +379,18 @@ public class ServerWrapper {
 
     public HashSet<UUID> getOnlinePlayers() {
         return onlinePlayers;
+    }
+
+    public Priority getPriority(UUID uuid) {
+        if (highPriorityQueue.stream().anyMatch(queuePlayer -> queuePlayer.uuid().equals(uuid))) {
+            return Priority.HIGH;
+        }
+        if (midPriorityQueue.stream().anyMatch(queuePlayer -> queuePlayer.uuid().equals(uuid))) {
+            return Priority.MID;
+        }
+        if (lowPriorityQueue.stream().anyMatch(queuePlayer -> queuePlayer.uuid().equals(uuid))) {
+            return Priority.LOW;
+        }
+        return null;
     }
 }
