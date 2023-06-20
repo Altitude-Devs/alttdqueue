@@ -11,7 +11,9 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class CommandList extends SubCommand {
 
@@ -75,10 +77,20 @@ public class CommandList extends SubCommand {
                 .replace("{server}", serverWrapper.getServerInfo().getName())
                 .replace("{players}", String.valueOf(uuids.size()))));
         for (int i = 0; i < uuids.size() && i < 11; i++) {
-            plugin.getProxy().getPlayer(uuids.get(i)).ifPresent(Player::getUsername);
+            Optional<Player> optionalPlayer = plugin.getProxy().getPlayer(uuids.get(i));
             source.sendMessage(MiniMessage.miniMessage().deserialize(Config.QUEUE_LISTITEM
-                    .replace("{player}", plugin.getProxy().getPlayer(uuids.get(i)).isPresent() ? plugin.getProxy().getPlayer(uuids.get(i)).get().getUsername() : "error")
-                    .replace("{id}", String.valueOf(i+1))));
+                    .replace("{player}", optionalPlayer.map(Player::getUsername).orElse("error"))
+                    .replace("{id}", String.valueOf(i+1))
+                    .replace("{time}", optionalPlayer.map(player -> formatTime(serverWrapper.getQueueJoinTime(player.getUniqueId()))).orElse("invalid"))));
         }
+    }
+
+    private String formatTime(long queueJoinTime) {
+        if (queueJoinTime == -1)
+            return "invalid";
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(queueJoinTime);
+        long hours = minutes % 60;
+        minutes = minutes / 60;
+        return hours + ":" + minutes;
     }
 }

@@ -160,7 +160,7 @@ public final class Config {
     // TODO reload message and all messages using minimsseage:(
     public static String NOSERVER = "<red>That server does not exist!";
     public static String QUEUE_LIST = "<yellow>{server} has {players} players in its queue.";
-    public static String QUEUE_LISTITEM = "{id}: {player}";
+    public static String QUEUE_LISTITEM = "{id}: {player} [{time}]";
     public static String ALREADY_QUEUED = "You are already in queue for <aqua>{server}</aqua>. You are at position <red>{position}</red>.";
     public static String DIRECT_CONNECT_FULL = "<aqua>{server}</aqua> is full. You are at position <red>{position}</red> in queue. {queue_type_message} Type /q leave to leave the queue.";
     public static String LEFT_QUEUE = "You have left queue for <aqua>{server}</aqua>.";

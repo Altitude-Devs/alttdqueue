@@ -393,4 +393,21 @@ public class ServerWrapper {
         }
         return null;
     }
+
+    public long getQueueJoinTime(UUID uuid) {
+        long queueJoinTime = getQueueJoinTime(uuid, highPriorityQueue);
+        if (queueJoinTime != -1) {
+            return queueJoinTime;
+        }
+        queueJoinTime = getQueueJoinTime(uuid, midPriorityQueue);
+        if (queueJoinTime != -1) {
+            return queueJoinTime;
+        }
+        return getQueueJoinTime(uuid, lowPriorityQueue);
+    }
+
+    private long getQueueJoinTime(UUID uuid, LinkedList<QueuePlayer> list) {
+        Optional<QueuePlayer> any = list.stream().filter(queuePlayer -> queuePlayer.uuid().equals(uuid)).findAny();
+        return any.map(QueuePlayer::queueJoinTime).orElse(-1L);
+    }
 }
