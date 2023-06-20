@@ -59,14 +59,14 @@ public class ServerWrapper {
     }
 
     public synchronized void playerLeaveServer(UUID uuid) {
-        boolean remove = onlinePlayers.remove(uuid);
-        if (!remove)
+        onlinePlayers.remove(uuid);
+        if (isFull())
             return;
         allowNextPlayerThrough();
     }
 
     private void allowNextPlayerThrough() {
-        if (!hasQueue())
+        if (!hasQueue() || isFull())
             return;
         if (posInPriority < priorityOrder.length - 1) { //Increase the spot of the current priority since we're letting one player join
             posInPriority++;
