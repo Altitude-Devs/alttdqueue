@@ -88,9 +88,10 @@ public class CommandList extends SubCommand {
     private String formatTime(long queueJoinTime) {
         if (queueJoinTime == -1)
             return "invalid";
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(queueJoinTime);
-        long hours = minutes % 60;
-        minutes = minutes / 60;
+        long timeInQueue = System.currentTimeMillis() - queueJoinTime;
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(timeInQueue);
+        long hours = minutes / 60;
+        minutes = minutes % 60;
         return hours + ":" + minutes;
     }
 }
