@@ -211,9 +211,6 @@ public class ConnectionListener {
             wrapper.playerLeaveServer(uuid);
             wrapper.removeFromQueue(uuid);
         }
-        for (ServerWrapper serverWrapper : serverManager.getServersQueue()) { //bad fix maybe?
-            serverWrapper.playerLeaveServer(uuid);
-        }
     }
 
 
