@@ -90,8 +90,8 @@ public class CommandList extends SubCommand {
             return "invalid";
         long timeInQueue = System.currentTimeMillis() - queueJoinTime;
         long minutes = TimeUnit.MILLISECONDS.toMinutes(timeInQueue);
-        long hours = minutes / 60;
-        minutes = minutes % 60;
+        long hours = minutes % 60;
+        minutes = minutes / 60;
         return hours + ":" + minutes;
     }
 }
