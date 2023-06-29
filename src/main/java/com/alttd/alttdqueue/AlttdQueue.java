@@ -1,14 +1,14 @@
 package com.alttd.alttdqueue;
 
-import com.alttd.alttdqueue.command.CommandManager;
-import com.alttd.alttdqueue.command.Queue;
+import com.alttd.alttdqueue.command.QueueCommandManager;
+import com.alttd.alttdqueue.command.WhitelistCommandManager;
 import com.alttd.alttdqueue.config.Config;
+import com.alttd.alttdqueue.config.Messages;
 import com.alttd.alttdqueue.listeners.ConnectionListener;
 import com.alttd.alttdqueue.managers.ServerManager;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
-import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -40,12 +40,15 @@ public class AlttdQueue {
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
         Config.init(getDataDirectory());
-        serverManager = new ServerManager(plugin);
+        Messages.init(getDataDirectory());
+        ConnectionListener connectionListener = new ConnectionListener(this);
+        serverManager = new ServerManager(plugin, connectionListener);
         serverManager.initialize();
-        server.getEventManager().register(this, new ConnectionListener(this));
-        new Queue(this);
+        connectionListener.init(serverManager);
+        server.getEventManager().register(this, connectionListener);
         //server.getCommandManager().register(new queueCommand(this), "queue");
-        server.getCommandManager().register("permissionwhitelist", new CommandManager());
+        server.getCommandManager().register("permissionwhitelist", new WhitelistCommandManager());
+        server.getCommandManager().register("queue", new QueueCommandManager(this));
     }
 
     public ProxyServer getProxy() {
@@ -67,6 +70,7 @@ public class AlttdQueue {
     public void reload() {
         getServerManager().queueTask.cancel();
         Config.init(getDataDirectory());
+        Messages.init(getDataDirectory());
         serverManager.cleanup();
         serverManager.initialize();
     }

@@ -55,7 +55,7 @@ public final class Messages {
         verbose = getBoolean("verbose", true);
         version = getInt("config-version", 1);
 
-        readConfig(Config.class, null);
+        readConfig(Messages.class, null);
         try {
             configLoader.save(config);
         } catch (IOException e) {
@@ -157,16 +157,47 @@ public final class Messages {
         WHITELIST_OFF = getString("messages.enforced-whitelist", WHITELIST_OFF);
     }
 
-    public static String HELP_MESSAGE_WRAPPER = "<gold>PermissionWhitelist help:\n<commands></gold>";
-    public static String HELP_COMMAND_OFF = "<gold>/permissionwhitelist off <server></gold>: <green>Turns the whitelist off for specified server</green>";
-    public static String HELP_COMMAND_ON = "<gold>/permissionwhitelist on <server></gold>: <green>Turns the whitelist on for specified server</green>";
-    public static String HELP_COMMAND_HELP = "<gold>/permissionwhitelist help</gold>: <green>Shows this menu</green>";
-    public static String HELP_COMMAND_ENFORCE = "<gold>/permissionwhitelist enforce <server></gold>: <green>Enforces whitelist for specified server</green>";
+    public static String PW_HELP_MESSAGE_WRAPPER = "<gold>PermissionWhitelist help:\n<commands></gold>";
+    public static String PW_HELP_COMMAND_OFF = "<gold>/permissionwhitelist off <server></gold>: <green>Turns the whitelist off for specified server</green>";
+    public static String PW_HELP_COMMAND_ON = "<gold>/permissionwhitelist on <server></gold>: <green>Turns the whitelist on for specified server</green>";
+    public static String PW_HELP_COMMAND_HELP = "<gold>/permissionwhitelist help</gold>: <green>Shows this menu</green>";
+    public static String PW_HELP_COMMAND_ENFORCE = "<gold>/permissionwhitelist enforce <server></gold>: <green>Enforces whitelist for specified server</green>";
+    private static void loadPermissionWhitelistHelp() {
+        PW_HELP_MESSAGE_WRAPPER = getString("help.wrapper", PW_HELP_MESSAGE_WRAPPER);
+        PW_HELP_COMMAND_OFF = getString("help.command-off", PW_HELP_COMMAND_OFF);
+        PW_HELP_COMMAND_ON = getString("help.command-on", PW_HELP_COMMAND_ON);
+        PW_HELP_COMMAND_HELP = getString("help.command-help", PW_HELP_COMMAND_HELP);
+        PW_HELP_COMMAND_ENFORCE = getString("help.command-enforce", PW_HELP_COMMAND_ENFORCE);
+    }
+
+    public static String Q_HELP_MESSAGE_WRAPPER = "<gold>Queue help:\n<commands></gold>";
+    public static String Q_HELP_COMMAND_HELP = "<gold>/queue help</gold>: <green>Shows this menu</green>";
+    public static String Q_HELP_COMMAND_INFO = "<gold>/queue info [server]</gold>: <green>Displays info for the current queue</green>";
+    public static String Q_HELP_COMMAND_LIST = "<gold>/queue list [server]</gold>: <green>Show the queue of a server</green>";
+    public static String Q_HELP_COMMAND_LIST_ONLINE = "<gold>/queue listonline <server></gold>: <green>Show the online players of a server according to the plugin</green>";
+    public static String Q_HELP_COMMAND_LEAVE = "<gold>/queue leave</gold>: <green>Leave the queue you're in</green>";
+    public static String Q_HELP_COMMAND_RELOAD = "<gold>/queue reload</gold>: <green>Reload the queue plugin</green>";
     private static void loadCommandMessages() {
-        HELP_MESSAGE_WRAPPER = getString("help.wrapper", HELP_MESSAGE_WRAPPER);
-        HELP_COMMAND_OFF = getString("help.command-off", HELP_COMMAND_OFF);
-        HELP_COMMAND_ON = getString("help.command-on", HELP_COMMAND_ON);
-        HELP_COMMAND_HELP = getString("help.command-help", HELP_COMMAND_HELP);
-        HELP_COMMAND_ENFORCE = getString("help.command-enforce", HELP_COMMAND_ENFORCE);
+        String path = "queue-help.";
+
+        Q_HELP_COMMAND_HELP = getString(path + "help", Q_HELP_COMMAND_HELP);
+        Q_HELP_MESSAGE_WRAPPER = getString(path + "wrapper", Q_HELP_MESSAGE_WRAPPER);
+        Q_HELP_COMMAND_INFO = getString(path + "info", Q_HELP_COMMAND_INFO);
+        Q_HELP_COMMAND_LIST = getString(path + "list", Q_HELP_COMMAND_LIST);
+        Q_HELP_COMMAND_LIST_ONLINE = getString(path + "list-online", Q_HELP_COMMAND_LIST_ONLINE);
+        Q_HELP_COMMAND_LEAVE = getString(path + "leave", Q_HELP_COMMAND_LEAVE);
+        Q_HELP_COMMAND_RELOAD = getString(path + "reload", Q_HELP_COMMAND_RELOAD);
+    }
+
+    public static String SENDING_TO_SERVER = "<green>Sending you to <server> after <time> minutes in queue!";
+    public static String LIST_ONLINE = "<green><amount> online players on <server>:</green>\n<online_players>";
+    public static String LIST_ONLINE_INVALID = "\n<red>Found <amount> invalid online players removing them from online player list:\n</red><invalid_players>";
+
+    private static void loadOtherMessages() {
+        String path = "other.";
+
+        SENDING_TO_SERVER = getString(path + "sending-to-server", SENDING_TO_SERVER);
+        LIST_ONLINE = getString(path + "list-online", LIST_ONLINE);
+        LIST_ONLINE_INVALID = getString(path + "list-online-invalid", LIST_ONLINE_INVALID);
     }
 }

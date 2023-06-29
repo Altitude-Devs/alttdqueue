@@ -1,11 +1,8 @@
 package com.alttd.alttdqueue.config;
 
 import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableMap;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.yaml.snakeyaml.DumperOptions;
 
 import java.io.File;
@@ -13,8 +10,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 public final class Config {
@@ -142,6 +137,8 @@ public final class Config {
     }
 
     public static String PRIORITY_QUEUE = "altiqueue.priority-queue";
+    public static String PERM_QUEUE_HIGH = "altiqueue.priority-high";
+    public static String PERM_QUEUE_MID = "altiqueue.priority-mid";
     public static String SKIP_QUEUE = "altiqueue.skip-queue";
     public static String QUEUE_COMMAND = "altiqueue.queue-command";
     public static String QUEUERELOAD_COMMAND = "altiqueue.queuereload-command";
@@ -150,6 +147,8 @@ public final class Config {
     public static String COMMAND_BASE_PREFIX = "altiqueue.command";
     private static void Permissions() {
         PRIORITY_QUEUE = getString("permission.priority-queue", PRIORITY_QUEUE);
+        PERM_QUEUE_HIGH = getString("permission.priority-high", PERM_QUEUE_HIGH);
+        PERM_QUEUE_MID = getString("permission.priority-mid", PERM_QUEUE_MID);
         SKIP_QUEUE = getString("permission.skip-queue", SKIP_QUEUE);
         QUEUE_COMMAND = getString("permission.queue-command", QUEUE_COMMAND);
         QUEUERELOAD_COMMAND = getString("permission.queuereload-command", QUEUERELOAD_COMMAND);
@@ -161,17 +160,20 @@ public final class Config {
     // TODO reload message and all messages using minimsseage:(
     public static String NOSERVER = "<red>That server does not exist!";
     public static String QUEUE_LIST = "<yellow>{server} has {players} players in its queue.";
-    public static String QUEUE_LISTITEM = "{id}: {player}";
+    public static String QUEUE_LISTITEM = "{id}: {player} [{time}]";
     public static String ALREADY_QUEUED = "You are already in queue for <aqua>{server}</aqua>. You are at position <red>{position}</red>.";
-    public static String DIRECT_CONNECT_FULL = "<aqua>{server}</aqua> is full. You are at position <red>{position}</red> in queue. Purchase a donor rank to get a prioritized queue. Type /q leave to leave the queue.";
+    public static String DIRECT_CONNECT_FULL = "<aqua>{server}</aqua> is full. You are at position <red>{position}</red> in queue. {queue_type_message} Type /q leave to leave the queue.";
     public static String LEFT_QUEUE = "You have left queue for <aqua>{server}</aqua>.";
-    public static String JOINED_QUEUE = "You have joined the queue for <aqua>{server}</aqua>. You are at position <red>{position}</red>. Purchase a donor rank to get a prioritized queue. Type /q leave to leave the queue.";
+    public static String JOINED_QUEUE = "You have joined the queue for <aqua>{server}</aqua>. You are at position <red>{position}</red>. {queue_type_message} Type /q leave to leave the queue.";
+    public static String JOINED_HIGH_PRIORITY = "You are in high priority queue, thanks for the support!";
+    public static String JOINED_MID_PRIORITY = "You are in mid priority queue, thanks for the support!";
+    public static String JOINED_LOW_PRIORITY = "You are in low priority queue, purchase the Viceroy donor rank to get a prioritized queue.";
     public static String CONNECT = "You have been connected to <aqua>{server}</aqua>.";
     public static String ALREADY_CONNECTED = "You are already connected to <aqua>{server}</aqua>.";
     public static String POSITION_UPDATE = "You are now at position <red>{position}</red> for <aqua>{server}</aqua>.";
     public static String NOT_QUEUED = "<red>You are not queued for a server.";
     public static String ONLY_PLAYERS = "<red>Only players can run that command.";
-    public static String CHECK_STATUS = "You are at position <red>{position}</red> for <aqua>{server}</aqua>. Purchase a donor rank to get a prioritized queue. Type /q leave to leave the queue.";
+    public static String CHECK_STATUS = "You are at position <red>{position}</red> for <aqua>{server}</aqua>. {queue_type_message} Type /q leave to leave the queue.";
     public static String RELOAD = "<red>AlttdQueue config reloaded.";
     public static String BOSS_BAR = "<green>You are <position> in queue!</green>";
     private static void messages() {

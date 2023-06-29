@@ -51,6 +51,6 @@ public class CommandEnforce extends SubCommand {
 
     @Override
     public String getHelpMessage() {
-        return Messages.HELP_COMMAND_ENFORCE;
+        return Messages.PW_HELP_COMMAND_ENFORCE;
     }
 }
