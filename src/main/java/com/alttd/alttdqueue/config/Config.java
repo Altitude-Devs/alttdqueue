@@ -1,8 +1,10 @@
 package com.alttd.alttdqueue.config;
 
 import com.google.common.base.Throwables;
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
+import org.spongepowered.configurate.ConfigurationNode;
+import org.spongepowered.configurate.serialize.SerializationException;
+import org.spongepowered.configurate.yaml.NodeStyle;
+import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 import org.yaml.snakeyaml.DumperOptions;
 
 import java.io.File;
@@ -18,16 +20,16 @@ public final class Config {
 
     private static File CONFIG_FILE;
     public static ConfigurationNode config;
-    public static YAMLConfigurationLoader configLoader;
+    public static YamlConfigurationLoader configLoader;
 
     static int version;
     static boolean verbose;
 
     public static void init(File path) {
         CONFIG_FILE = new File(path, "config.yml");;
-        configLoader = YAMLConfigurationLoader.builder()
-                .setFile(CONFIG_FILE)
-                .setFlowStyle(DumperOptions.FlowStyle.BLOCK)
+        configLoader = YamlConfigurationLoader.builder()
+                .file(CONFIG_FILE)
+                .nodeStyle(NodeStyle.BLOCK)
                 .build();
         if (!CONFIG_FILE.getParentFile().exists()) {
             CONFIG_FILE.getParentFile().mkdirs();
@@ -48,8 +50,8 @@ public final class Config {
             //Bukkit.getLogger().log(Level.SEVERE, "Could not load config.yml, please correct your syntax errors.", e);
         }
 
-        configLoader.getDefaultOptions().setHeader(HEADER);
-        configLoader.getDefaultOptions().withShouldCopyDefaults(true);
+        configLoader.defaultOptions().header(HEADER);
+        configLoader.defaultOptions().shouldCopyDefaults(true);
 
         verbose = getBoolean("verbose", true);
         version = getInt("config-version", 1);
@@ -71,7 +73,11 @@ public final class Config {
                         method.setAccessible(true);
                         method.invoke(instance);
                     } catch (InvocationTargetException ex) {
-                        throw Throwables.propagate(ex.getCause());
+                        try {
+                            Throwables.propagateIfPossible(ex.getCause(), InvocationTargetException.class);
+                        } catch (InvocationTargetException e) {
+                            throw new RuntimeException(e);
+                        }
                     } catch (Exception ex) {
                         //Bukkit.getLogger().log(Level.SEVERE, "Error invoking " + method, ex);
                     }
@@ -100,33 +106,38 @@ public final class Config {
     }
 
     private static void set(String path, Object def) {
-        if(config.getNode(splitPath(path)).isVirtual())
-            config.getNode(splitPath(path)).setValue(def);
+        if(config.node(splitPath(path)).virtual()) {
+            try {
+                config.node(splitPath(path)).set(def);
+            } catch (SerializationException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private static boolean getBoolean(String path, boolean def) {
         set(path, def);
-        return config.getNode(splitPath(path)).getBoolean(def);
+        return config.node(splitPath(path)).getBoolean(def);
     }
 
     private static double getDouble(String path, double def) {
         set(path, def);
-        return config.getNode(splitPath(path)).getDouble(def);
+        return config.node(splitPath(path)).getDouble(def);
     }
 
     private static int getInt(String path, int def) {
         set(path, def);
-        return config.getNode(splitPath(path)).getInt(def);
+        return config.node(splitPath(path)).getInt(def);
     }
 
     private static String getString(String path, String def) {
         set(path, def);
-        return config.getNode(splitPath(path)).getString(def);
+        return config.node(splitPath(path)).getString(def);
     }
 
     private static Long getLong(String path, Long def) {
         set(path, def);
-        return config.getNode(splitPath(path)).getLong(def);
+        return config.node(splitPath(path)).getLong(def);
     }
 
     public static String LOBBY_STRATEGY = "LOWEST";

@@ -3,8 +3,8 @@ package com.alttd.alttdqueue.config;
 import com.alttd.alttdqueue.AlttdQueue;
 import com.alttd.alttdqueue.data.Priority;
 import com.google.common.reflect.TypeToken;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
+import org.spongepowered.configurate.serialize.SerializationException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,45 +47,54 @@ public final class ServerConfig {
     }
 
     private static void set(String path, Object def) {
-        if (Config.config.getNode(splitPath(path)).isVirtual()) {
-            Config.config.getNode(splitPath(path)).setValue(def);
+        if(Config.config.node(splitPath(path)).virtual()) {
+            try {
+                Config.config.node(splitPath(path)).set(def);
+            } catch (SerializationException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
     private static void setUnsafe(String path, Object def) {
-        Config.config.getNode(splitPath(path)).setValue(def);
+        try {
+            Config.config.node(splitPath(path)).set(def);
+        } catch (SerializationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private boolean getBoolean(String path, boolean def) {
         set(defaultpath + path, def);
-        return Config.config.getNode(splitPath(configPath + path)).getBoolean(
-                Config.config.getNode(splitPath(defaultpath + path)).getBoolean(def));
+        return Config.config.node(splitPath(configPath + path)).getBoolean(
+                Config.config.node(splitPath(defaultpath + path)).getBoolean(def));
     }
 
     private double getDouble(String path, double def) {
         set(defaultpath + path, def);
-        return Config.config.getNode(splitPath(configPath + path)).getDouble(
-                Config.config.getNode(splitPath(defaultpath + path)).getDouble(def));
+        return Config.config.node(splitPath(configPath + path)).getDouble(
+                Config.config.node(splitPath(defaultpath + path)).getDouble(def));
     }
 
     private int getInt(String path, int def) {
         set(defaultpath + path, def);
-        return Config.config.getNode(splitPath(configPath + path)).getInt(
-                Config.config.getNode(splitPath(defaultpath + path)).getInt(def));
+        return Config.config.node(splitPath(configPath + path)).getInt(
+                Config.config.node(splitPath(defaultpath + path)).getInt(def));
     }
 
     private String getString(String path, String def) {
         set(defaultpath + path, def);
-        return Config.config.getNode(splitPath(configPath + path)).getString(
-                Config.config.getNode(splitPath(defaultpath + path)).getString(def));
+        return Config.config.node(splitPath(configPath + path)).getString(
+                Config.config.node(splitPath(defaultpath + path)).getString(def));
     }
 
     private List<String> getStringList(String path, List<String> def) {
         set(defaultpath + path, def);
         try {
-            return Config.config.getNode(splitPath(configPath + path)).getList(TypeToken.of(String.class),
-                    Config.config.getNode(splitPath(defaultpath + path)).getList(TypeToken.of(String.class), def));
-        } catch (ObjectMappingException e) {
+            return Config.config.node(splitPath(configPath + path)).
+                    getList(String.class,
+                            Config.config.node(splitPath(defaultpath + path)).getList(String.class, def));
+        } catch (Exception e) {
             logger.warn("Unable to load string list at path: [" + path + "] return default value");
             return def;
         }
@@ -99,7 +108,8 @@ public final class ServerConfig {
     private void ServerSettings() {
         maxPlayers = getInt("maxplayer", maxPlayers);
         isLobby = getBoolean("islobby", isLobby);
-        priorityOrder = getStringList("priorityOrder", Arrays.stream(priorityOrder).map(Priority::toString).collect(Collectors.toList()))
+        priorityOrder = getStringList("priorityOrder",
+                                      Arrays.stream(priorityOrder).map(Priority::toString).collect(Collectors.toList()))
                 .stream().map(Priority::valueOf).toList().toArray(new Priority[0]);
         hasWhiteList = getBoolean("hasWhiteList", hasWhiteList);
     }

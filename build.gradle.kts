@@ -1,8 +1,6 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
-
 plugins {
     id("java")
-    id("com.github.johnrengelman.shadow") version "7.1.0"
+    id("com.gradleup.shadow") version "9.0.0-beta4"
 }
 
 group = "com.alttd"
@@ -13,7 +11,7 @@ apply<JavaLibraryPlugin>()
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
@@ -27,7 +25,6 @@ tasks {
     }
 
     shadowJar {
-        dependsOn(getByName("relocateJars") as ConfigureShadowRelocation)
         archiveFileName.set("${project.name}-${project.version}.jar")
         minimize()
         configurations = listOf(project.configurations.shadow.get())
@@ -36,15 +33,10 @@ tasks {
     build {
         dependsOn(shadowJar)
     }
-
-    create<ConfigureShadowRelocation>("relocateJars") {
-        target = shadowJar.get()
-        prefix = "${project.name}.lib"
-    }
 }
 
 dependencies {
     // Velocity
-    compileOnly("com.velocitypowered:velocity-api:3.1.2-SNAPSHOT") // Velocity
-    annotationProcessor("com.velocitypowered:velocity-api:3.1.2-SNAPSHOT")
+    compileOnly("com.velocitypowered:velocity-api:3.4.0-SNAPSHOT") // Velocity
+    annotationProcessor("com.velocitypowered:velocity-api:3.4.0-SNAPSHOT")
 }
